@@ -22,12 +22,15 @@ group :development, :test do
   gem 'httparty'
   gem 'byebug'
   gem 'pry-rails'
-  gem 'rspec-rails'
+
+  # Pulling these from master fixes a few Rails 5 compatibility issues
+  gem 'rspec', github: 'rspec/rspec'
+  %w( core expectations mocks support rails ).each do |m|
+    gem "rspec-#{m}", github: "rspec/rspec-#{m}"
+  end
 end
 
 group :development do
-  # gem 'web-console', '~> 3.0'
-  # gem 'listen', '~> 3.0.5'
   gem 'spring'
   gem 'spring-commands-rspec'
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -35,4 +38,5 @@ end
 
 group :test do
   gem 'simplecov'
+  gem 'coveralls'
 end

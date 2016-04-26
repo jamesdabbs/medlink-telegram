@@ -17,8 +17,7 @@ require 'rspec/rails'
 # of increasing the boot-up time by auto-requiring all files in the support
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
-#
-# Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
@@ -48,63 +47,7 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
-  module HandlerHelpers
-    def subject
-      described_class
-    end
-
-    def request
-      @request ||= Bot::Request::Test.new
-    end
-
-    def response
-      @response ||= Bot::Response.new
-    end
-
-    def medlink
-      @medlink ||= instance_double Medlink
-    end
-
-    def pcv
-      @pcv ||= instance_double User, name: "PCV"
-    end
-
-    def run user: nil, message: nil, text: nil, with: {}
-      raise "Need `message` or `text`" unless message || text
-      message ||= double "Message", text: text
-
-      request.user    = user if user
-      request.message = message || double("message", text: text)
-
-      handler = described_class.new request, response, medlink: medlink
-      with.any? ? handler.run(**with) : handler.run
-
-      raise response.error if response.error
-      response
-    end
-
-    def route text
-      request.message = double "Message", text: text
-      handler = Handlers.find request, handlers: Bot.default_handlers
-
-      _route_to text, handler
-    end
-
-    def messages
-      response.messages
-    end
-
-    def replies
-      messages.map &:text
-    end
-  end
   config.include HandlerHelpers, handler: true
-
-  module Factories
-    def make_supply
-      double "Supply", name: rand.to_s, shortcode: rand.to_s
-    end
-  end
   config.include Factories
 end
 

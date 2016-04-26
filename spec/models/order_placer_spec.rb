@@ -6,6 +6,6 @@ describe OrderPlacer do
     expect(medlink).to receive(:new_order)
 
     placer = OrderPlacer.new medlink: medlink
-    placer.run [make_supply]
+    placer.run [build(Supply)]
   end
 end

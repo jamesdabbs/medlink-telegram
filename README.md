@@ -6,6 +6,7 @@
 
 # Backlog
 
+* Better error handling - make _sure_ the user always gets a response. Should we have a Handler::Errors? Bot instance with error handler?
 * Users are notified via Telegram when responses are sent
 * Users can control their notification preferences - SMS, Telegram, email
 * Web view of bot message traffic

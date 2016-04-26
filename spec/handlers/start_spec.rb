@@ -20,9 +20,6 @@ describe Handlers::Start, handler: true do
     expect(messages.count).to eq 2
     expect(messages.first.text).to eq "Welcome back!"
     expect(messages.last.text).to eq "What can I do for you, User?"
-    expect(messages.last.buttons).to eq [
-      "Show Supply List",
-      "Show Order History"
-    ]
+    expect(messages.last.buttons.first).to match /new order/i
   end
 end
