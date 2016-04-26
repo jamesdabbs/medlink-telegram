@@ -1,24 +1,17 @@
-## README
+# Deployable MVP
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Asks for contact info
+* Can order new supplies
+* Can check request history
 
-Things you may want to cover:
+# Backlog
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Users are notified via Telegram when responses are sent
+* Users can control their notification preferences - SMS, Telegram, email
+* Web view of bot message traffic
+  * Admin only
+  * Can open page and see a message log
+  * To help admins to help users when the bot doesn't recognize intent
+* Better fuzzy matching (of supplies and general requests)
+* Admin-only bot utilities
+  * Report running
