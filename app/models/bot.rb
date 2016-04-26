@@ -78,6 +78,8 @@ class Bot
     response = Handlers.dispatch request, handlers: handlers
     if response.error
       receipt.update! handled: false, error: serialize_error(response.error)
+      Rollbar.error response.error, user_info: request.user.to_json
+
       Bot.reply_to request, "Uh-oh. Looks like something went wrong: #{response.error}"
     elsif response.handled?
       receipt.update! handled: true, response: response.messages
