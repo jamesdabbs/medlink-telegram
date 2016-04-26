@@ -5,6 +5,8 @@ rvm:
 - 2.2.4
 script:
 - RAILS_ENV=test COVERAGE=true bundle exec rake db:setup spec
+env:
+- telegram_token=xxx medlink_token=xxx medlink_url=xxx
 branches:
   only:
   - master
