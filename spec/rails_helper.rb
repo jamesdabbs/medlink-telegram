@@ -50,13 +50,3 @@ RSpec.configure do |config|
   config.include HandlerHelpers, handler: true
   config.include Factories
 end
-
-RSpec::Matchers.define :_route_to do |text, found_handler|
-  match do |given_handler|
-    given_handler == found_handler.class
-  end
-
-  failure_message do |given_handler|
-    "expected #{text} to route to #{given_handler}, not #{found_handler.class}"
-  end
-end

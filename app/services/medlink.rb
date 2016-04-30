@@ -1,9 +1,13 @@
 class Medlink
-  def initialize phone:, token: nil, url: nil
-    @phone = phone
+  def initialize phone: nil, token: nil, url: nil, runner: nil
+    @phone, @runner = phone, runner
     @token = token || Figaro.env.medlink_token!
     @url   = url   || Figaro.env.medlink_url || "https://pcmedlink.org/api/v1"
-    authorize_from_phone_number!
+    authorize_from_phone_number! if phone
+  end
+
+  def authorized?
+    @auth.present?
   end
 
   def available_supplies
@@ -43,6 +47,10 @@ class Medlink
 
     req = RestClient::Request.new opts
     req = ApiAuth.sign! req, @id, @auth if @auth
-    JSON.parse(req.execute)
+    JSON.parse(run req)
+  end
+
+  def run request
+    @runner ? @runner.call(request) : request.execute
   end
 end

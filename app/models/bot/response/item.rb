@@ -25,7 +25,7 @@ class Bot
       end
 
       def to_args
-        [text, **@opts]
+        @opts.merge text: text
       end
     end
   end

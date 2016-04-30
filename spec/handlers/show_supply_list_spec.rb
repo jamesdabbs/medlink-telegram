@@ -7,7 +7,7 @@ describe Handlers::ShowSupplyList, handler: true do
       double("Supply", name: "Bnms", shortcode: "BNM")
     ]
 
-    run user: pcv, message: ""
+    run user: pcv
 
     expect(replies.last).to include "ASDF"
     expect(replies.last).to include "BNM"

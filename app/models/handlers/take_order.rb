@@ -16,7 +16,7 @@ module Handlers
         reply "Alright! Your order for #{desc} is in the system. We'll get back to you ASAP."
       end
       if placer.pre_existing_orders.any?
-        desc = placer.pre_existing_orders.to_sentence
+        desc = placer.pre_existing_orders.map(&:name).to_sentence
         reply "You already had open orders for #{desc}, so I didn't update those. If you haven't gotten an item that you expect, please contact support@pcmedlink.org"
       end
       if placer.user_errors.any?

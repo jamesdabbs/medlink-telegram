@@ -27,9 +27,24 @@ describe Handlers::TakeOrder, handler: true do
       "Alright! Your order for Bandages is in the system. We'll get back to you ASAP."]
   end
 
-  pending "gives feedback when orders aren't placed"
-  # * supply doesn't exist
-  # * supply isn't available
-  # * supply is already on order
-  # * medlink isn't reachable
+  it "gives feedback on orders" do
+    allow(medlink).to receive(:available_supplies).and_return []
+
+    placer = instance_double OrderPlacer,
+      new_orders:          [build(Supply, name: "a"), build(Supply, name: "b")],
+      pre_existing_orders: [build(Supply, name: "c"), build(Supply, name: "d")],
+      user_errors:         ["asdf", "zxcv"]
+    allow(placer).to receive(:run)
+
+    run user: pcv, text: "order things", with: { placer: placer }
+
+    expect(replies).to eq [
+      "Alright! Your order for a and b is in the system. We'll get back to you ASAP.",
+      "You already had open orders for c and d, so I didn't update those. If you haven't gotten an item that you expect, please contact support@pcmedlink.org",
+      "Something went wrong when trying to order asdf and zxcv."
+    ]
+  end
+
+  # TODO: probably not. Should just retry job.
+  pending "gives feedback if Medlink is down"
 end

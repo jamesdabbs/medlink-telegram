@@ -4,7 +4,10 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
 ]
-SimpleCov.start 'rails'
+SimpleCov.start 'rails' do
+  add_group "Handlers", "app/models/handlers"
+  add_group "Services", "app/services"
+end
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

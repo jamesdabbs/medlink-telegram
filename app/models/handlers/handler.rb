@@ -1,7 +1,5 @@
 module Handlers
-  def self.find request, handlers: nil
-    response = Bot::Response.new
-
+  def self.find request, response, handlers: nil
     handlers.find do |klass|
       handler = klass.new request, response
       return handler if handler.applies?
@@ -10,16 +8,8 @@ module Handlers
     fallback_handler.new request, response
   end
 
-  def self.dispatch request, handlers:
-    handler = find request, handlers: handlers
-
-    begin
-      handler.run
-    rescue StandardError => e
-      handler.response.error = e
-    end
-
-    handler.response
+  def self.dispatch request, response, handlers:
+    find(request, response, handlers: handlers).send :__run__
   end
 
   def self.fallback_handler
@@ -37,15 +27,12 @@ module Handlers
     def initialize request, response, medlink: nil
       @request, @response = request, response
       @medlink = medlink
-      @response.handler = self
     end
 
     def reply text, **opts
       reply = Bot::Response::Item.new text, **opts
-      @response.messages.push reply
-      unless Rails.env.test?
-        Bot.reply_to request, *reply.to_args
-      end
+      response.messages.push reply
+      Bot.reply_to request, reply.to_args
     end
 
     def applies?
@@ -61,7 +48,9 @@ module Handlers
     end
 
     def run
+      # :nocov:
       raise NotImplementedError, "#{self.class} does not implement `run`"
+      # :nocov:
     end
 
     private
@@ -73,7 +62,13 @@ module Handlers
     end
 
     def call other
-      other.new(request, response).run
+      other.new(request, response).send :__run__
+    end
+
+    def __run__
+      response.handlers.push self
+      run
+      response
     end
   end
 end

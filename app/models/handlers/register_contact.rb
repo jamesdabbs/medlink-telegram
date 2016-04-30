@@ -5,7 +5,7 @@ module Handlers
     end
 
     def run
-      if user = User.register_from_contact(message.contact)
+      if request.user = User.register_from_contact(message.contact)
         kb = Types::ReplyKeyboardHide.new(text: "", hide_keyboard: true)
         reply "Awesome, got it!", reply_markup: kb
 

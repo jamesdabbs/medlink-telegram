@@ -1,52 +1,31 @@
 class Bot
   Client = Telegram::Bot::Client.new Figaro.env.telegram_token!
 
-  def self.default_handlers
-    [
-      Handlers::Callbacks,
-      Handlers::Start,
-      Handlers::Help,
-      Handlers::Settings,
-      Handlers::RegisterContact,
-      Handlers::AskForContact,
-
-      Handlers::ShowSupplyList,
-      Handlers::OutstandingOrders,
-
-      # Multi-message state-based order flow
-      Handlers::StartOrder,
-      Handlers::ContinueOrder,
-      Handlers::FinishOrder,
-
-      # All-in-one order handler
-      Handlers::TakeOrder,
-
-      Handlers::Fallback
-    ]
+  def self.reply_to request, **opts
+    message reply_routing_keys(request).merge opts
   end
 
-  def self.receive message
-    request = Request.new message
-    new(request: request).handle
-  end
-
-  def self.run
-    Telegram::Bot::Client.run Figaro.env.telegram_token! do |b|
-      b.listen { |message| receive message }
-    end
-  end
-
-  def self.reply_to request, text, **opts
-    return if Rails.env.test? # FIXME
-
+  def self.reply_routing_keys request
     message = request.message
-    chat_id = if message.respond_to?(:chat)
-      message.chat.id
-    else # FIXME
-      message.message.chat.id
+    if message.try :chat
+      { chat_id: message.chat.id }
+    elsif message.try(:message).try :chat
+      { chat_id: message.message.chat.id }
+    else
+      raise "Don't know how to reply to #{request}"
     end
+  end
 
-    Bot::Client.api.send_message opts.merge chat_id: chat_id, text: text
+  def self.message **opts
+    if Rails.env.test?
+      messages.push opts
+    else
+      Bot::Client.api.send_message **opts
+    end
+  end
+
+  def self.messages
+    @messages ||= []
   end
 
   def self.register_callback name, klass
@@ -72,44 +51,22 @@ class Bot
   register_callback :show_outstanding_orders, Handlers::OutstandingOrders
   register_callback :start_new_order, Handlers::StartOrder
 
-  def handle request
-    receipt = record_receipt request: request
+  attr_reader :handlers, :error_handler
 
-    response = Handlers.dispatch request, handlers: handlers
-    if response.error
-      receipt.update! handled: false, error: serialize_error(response.error)
-      Rollbar.error response.error, user_info: request.user.to_json
+  def receive update:
+    request = Request.new update.message || update.callback.query
+    handle request: request
+  end
 
-      Bot.reply_to request, "Uh-oh. Looks like something went wrong: #{response.error}"
-    elsif response.handled?
-      receipt.update! handled: true, response: response.messages
-    else
-      receipt.update! handled: false, response: response.messages
+  def handle request:
+    ResponseRecorder.new(request, error_handler: error_handler).call do |response|
+      Handlers.dispatch request, response, handlers: handlers
     end
-
-    response
-  rescue StandardError => e
-    # TODO: what if something goes wrong here?
-    receipt.try :update!, error: serialize_error(e)
-    Bot.reply_to request, "Uh-oh. Looks like something went wrong: #{e}"
   end
 
   private
 
-  attr_reader :handlers
-
-  def initialize handlers: nil
-    @handlers = handlers || self.class.default_handlers
-  end
-
-  def serialize_error e
-    {
-      message:  e.to_s,
-      location: e.backtrace.reject { |l| l.include?('ruby/gem') }.first(5)
-    }
-  end
-
-  def record_receipt request:
-    Message.create!(raw: request.message.to_h)
+  def initialize handlers:, error_handler: nil
+    @handlers, @error_handler = handlers, error_handler
   end
 end

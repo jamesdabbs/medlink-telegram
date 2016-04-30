@@ -19,25 +19,14 @@ module HandlerHelpers
     @pcv ||= build User, name: "PCV"
   end
 
-  def run user: nil, message: nil, text: nil, with: {}
-    raise "Need `message` or `text`" unless message || text
-    message ||= double "Message", text: text
-
+  def run user: nil, message: nil, text: "", with: {}
     request.user    = user if user
-    request.message = message || double("message", text: text)
+    request.message = message || build(:message, text: text)
 
     handler = described_class.new request, response, medlink: medlink
     with.any? ? handler.run(**with) : handler.run
 
-    raise response.error if response.error
     response
-  end
-
-  def route text
-    request.message = double "Message", text: text, contact: nil
-    handler = Handlers.find request, handlers: Bot.default_handlers
-
-    _route_to text, handler
   end
 
   def messages
@@ -46,5 +35,19 @@ module HandlerHelpers
 
   def replies
     messages.map &:text
+  end
+end
+
+RSpec::Matchers.define :route do |text|
+  match do |klass|
+    request.message = build :message, text: text
+    handler = Handlers.find request, Bot::Response.new, handlers: Medbot.handlers
+    klass == handler.class
+  end
+end
+
+RSpec::Matchers.define :use_handler do |klass|
+  match do |response|
+    response.handlers.any? { |h| h.is_a? klass }
   end
 end

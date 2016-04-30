@@ -1,7 +1,9 @@
 namespace :webhook do
   task run: :environment do
     puts "Running"
-    Bot.run
+    Telegram::Bot::Client.run Figaro.env.telegram_token! do |b|
+      b.listen { |message| Medbot.receive message }
+    end
   end
 
   desc "Set the webhook url"
