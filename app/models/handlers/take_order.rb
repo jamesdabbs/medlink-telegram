@@ -4,8 +4,14 @@ module Handlers
       match(request.message).present?
     end
 
-    # FIXME: of course the delegate nonsense was too clever here, and
-    #   now I can't reference helper methods
+    def match message
+      message.text.match(/^\/?order(.*)/)
+    end
+
+    def parsed message
+      match(message)[1].split(",").map(&:strip)
+    end
+
     run do |finder: nil, placer: nil|
       finder ||= SupplyFinder.new(medlink: medlink)
       result = finder.run parsed(message)
@@ -26,16 +32,6 @@ module Handlers
         desc = placer.user_errors.to_sentence
         reply "Something went wrong when trying to order #{desc}."
       end
-    end
-
-    private
-
-    def match message
-      message.text.match(/^\/?order(.*)/)
-    end
-
-    def parsed message
-      match(message)[1].split(",").map(&:strip)
     end
   end
 end

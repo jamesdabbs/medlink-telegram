@@ -1,31 +1,4 @@
 module Handlers
-  class Delegate
-    extend Forwardable
-    def_delegators :@request, :message, :user, :medlink
-
-    def initialize dispatch:, request:, response:
-      @dispatch, @request, @response = dispatch, request, response
-    end
-
-    private
-
-    attr_reader :request, :response, :dispatch
-
-    def reply text, **opts
-      response.reply request, text, **opts
-    end
-
-    def run other, *args
-      h = dispatch[other] || other.new(dispatch)
-      h.call request, response
-    end
-
-    def callbacks
-      dispatch.callbacks
-    end
-  end
-
-
   class Handler
     Types = Telegram::Bot::Types
 
@@ -36,11 +9,11 @@ module Handlers
     def call request, response, *args
       raise "#{self.class} should define a `run` block" unless self.class.runner
       response.handlers.push self
-      Delegate.new(
+      Delegate.new(self,
         dispatch:  dispatch,
         request:   request,
         response:  response
-      ).instance_exec(*args, &self.class.runner)
+      ).instance_exec *args, &self.class.runner
       response
     end
 
