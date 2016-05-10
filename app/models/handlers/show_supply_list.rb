@@ -1,10 +1,8 @@
 module Handlers
   class ShowSupplyList < Handler
-    def applies?
-      message.text =~ /^\/?list/i
-    end
+    match /^\/?list/i
 
-    def run
+    run do
       response = medlink.available_supplies.map do |s|
         "#{s.shortcode} - #{s.name}"
       end.join "\n"

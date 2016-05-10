@@ -1,11 +1,12 @@
 module Factories
   def build klass, **opts
     builder = {
-      User     => :build_user,
-      Supply   => :build_supply,
-      Order    => :build_order,
-      :message => :build_message,
-      :contact => :build_contact
+      User      => :build_user,
+      Supply    => :build_supply,
+      Order     => :build_order,
+      :message  => :build_message,
+      :contact  => :build_contact,
+      :callback => :build_callback
     }[klass]
 
     if builder
@@ -29,10 +30,24 @@ module Factories
       ordering?:  ordering
   end
 
-  def build_message text:, contact: nil
-    chat = double "Chat", id: rand(1 .. 1000)
-    instance_double Telegram::Bot::Types::Message,
-      text: text, contact: contact, chat: chat
+  def build_message text:, contact: nil, chat_id: nil
+    chat_id ||= rand(1 .. 1_000_000)
+    Telegram::Bot::Types::Message.new(
+      chat:    { id: chat_id },
+      text:    text,
+      contact: contact,
+      from:    { id: chat_id }
+    )
+  end
+
+  def build_callback data:, **opts
+    opts[:text] ||= ""
+    message = build_message **opts
+    Telegram::Bot::Types::CallbackQuery.new(
+      data:    data,
+      message: message,
+      from:    message.from
+    )
   end
 
   def build_order supply: nil
@@ -42,10 +57,11 @@ module Factories
 
   def build_contact user_id: nil
     user_id ||= rand(1 .. 1000)
-    instance_double Telegram::Bot::Types::Contact,
+    Telegram::Bot::Types::Contact.new(
       user_id:      user_id,
       first_name:   "First",
       last_name:    "Last",
       phone_number: "555-5555"
+    )
   end
 end

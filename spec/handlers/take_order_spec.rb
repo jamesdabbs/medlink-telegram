@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe Handlers::TakeOrder, handler: true do
   describe "when logged in" do
-    before(:each) { request.user = pcv }
+    before(:each) { self.user = pcv }
 
     it { should route "/order thing" }
     it { should route "order something" }

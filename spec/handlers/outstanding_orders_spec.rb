@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Handlers::OutstandingOrders, handler: true do
-  before(:each) { request.user = pcv }
+  before(:each) { self.user = pcv }
 
   it { should route "show orders" }
   it { should route "outstanding orders" }

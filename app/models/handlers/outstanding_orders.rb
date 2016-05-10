@@ -2,15 +2,13 @@ module Handlers
   class OutstandingOrders < Handler
     include ActionView::Helpers::DateHelper
 
-    def applies?
-      message.text.strip =~ /^(show|outstanding) orders$/i
-    end
+    match /^(show|outstanding) orders$/i
 
-    def run
+    run do
       orders = medlink.outstanding_orders
       unless orders.any?
         reply "You don't appear to have any outstanding orders."
-        return
+        next
       end
 
       groups = orders.

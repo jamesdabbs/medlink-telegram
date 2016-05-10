@@ -1,22 +1,18 @@
 class Bot
   class Request
     attr_reader :message
+    attr_writer :user
 
-    def initialize message, user: nil
-      @message, @user = message, user
+    def initialize message, user: nil, medlink: nil
+      @message, @user, @medlink = message, user, medlink
     end
 
     def user
       @user ||= User.find_by(telegram_id: message.from.id)
     end
 
-    class Test
-      attr_accessor :user
-      attr_writer :message, :medlink
-
-      def message
-        @message || raise("No message set")
-      end
+    def medlink
+      @medlink ||= Medlink.for_phone(user.phone_number)
     end
   end
 end

@@ -1,8 +1,9 @@
 namespace :webhook do
   task run: :environment do
     puts "Running"
+    set_webhook ""
     Telegram::Bot::Client.run Figaro.env.telegram_token! do |b|
-      b.listen { |message| Medbot.receive message }
+      b.listen { |message| Medbot.handle request: Bot::Request.new(message) }
     end
   end
 
@@ -10,23 +11,30 @@ namespace :webhook do
   task set: :environment do
     require "httparty"
 
-    print "Url: "
-    set_webhook $stdin.gets.chomp
+    unless url = get_ngrok_url
+      print "Url: "
+      url = $stdin.gets.chomp
+    end
+
+    set_webhook url
   end
 
   desc "Start ngrok and point the webhook at it"
   task ngrok: :environment do
     fork do
       sleep 5
-      response = HTTParty.get "http://localhost:4041"
-      domain   = response.match(/(https:\/\/\w+\.ngrok\.io)/)[1]
-      set_webhook domain
+      set_webhook_url
     end
 
     exec "ngrok http 3000"
   end
 
-  def set_webhook url
+  def get_ngrok_url
+    response = HTTParty.get "http://localhost:4040"
+    response.match(/(https:\/\/\w+\.ngrok\.io)/)[1]
+  end
+
+  def set_webhook url=nil
     token = Figaro.env.telegram_token!
 
     url.sub! /https?:\/\//, ''

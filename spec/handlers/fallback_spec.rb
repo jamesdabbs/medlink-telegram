@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe Handlers::Fallback, handler: true do
   describe "logged in" do
-    before(:each) { request.user = pcv }
+    before(:each) { self.user = pcv }
 
     it { should route "kajsdnflkajsnd" }
     it { should_not route "start" }

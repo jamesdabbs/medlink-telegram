@@ -1,14 +1,17 @@
 module Handlers
   class ContinueOrder < Handler
-    def applies?
-      return false unless user.ordering?
-      @finder = SupplyFinder.new(medlink: medlink)
-      @finder.has_match? message.text
+    def applies? request
+      return false unless request.user.ordering?
+      finder = SupplyFinder.new(medlink: request.medlink)
+      finder.has_match? request.message.text
     end
 
-    def run
+    run do
+      finder = SupplyFinder.new(medlink: request.medlink)
+      finder.has_match? request.message.text
+
       # TODO: batch these up and send when the user is done?
-      if m = @finder.near_match(message.text)
+      if m = finder.near_match(message.text)
         medlink.new_order supplies: [m]
         reply "Requested #{m.name}. Anything else?"
       else

@@ -13,17 +13,17 @@
 
 ActiveRecord::Schema.define(version: 20160420200623) do
 
-  create_table "messages", force: :cascade do |t|
-    t.text     "raw"
+  create_table "receipts", force: :cascade do |t|
+    t.integer  "user_id"
+    t.boolean  "handled"
+    t.text     "request"
+    t.text     "response"
+    t.text     "error"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "user_id"
-    t.text     "error"
-    t.boolean  "handled"
-    t.text     "response"
   end
 
-  add_index "messages", ["user_id"], name: "index_messages_on_user_id"
+  add_index "receipts", ["user_id"], name: "index_messages_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.integer  "telegram_id"

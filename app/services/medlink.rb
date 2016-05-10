@@ -1,4 +1,12 @@
 class Medlink
+  def self.for_phone phone
+    new(
+      phone: phone,
+      token: Figaro.env.medlink_token!,
+      url:   Figaro.env.medlink_url!
+    )
+  end
+
   def initialize phone: nil, token: nil, url: nil, runner: nil
     @phone, @runner = phone, runner
     @token = token || Figaro.env.medlink_token!

@@ -16,16 +16,26 @@ class Bot
         end
       end
 
+      def markup
+        @opts[:reply_markup]
+      end
+
       def buttons
-        @opts[:reply_markup].inline_keyboard.map { |a| a.first.text }
+        markup.inline_keyboard.map { |a| a.first.text }
+      rescue
+        []
       end
 
       def keyboard
-        @opts[:reply_markup].keyboard
+        markup.keyboard
       end
 
       def to_args
         @opts.merge text: text
+      end
+
+      def inspect
+        %|<#{self.class.name}("#{text}", buttons: #{buttons})>|
       end
     end
   end

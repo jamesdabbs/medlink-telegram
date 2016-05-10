@@ -1,43 +1,52 @@
 module Handlers
-  def self.find request, response, handlers: nil
-    handlers.find do |klass|
-      handler = klass.new request, response
-      return handler if handler.applies?
+  class Delegate
+    extend Forwardable
+    def_delegators :@request, :message, :user, :medlink
+
+    def initialize dispatch:, request:, response:
+      @dispatch, @request, @response = dispatch, request, response
     end
 
-    fallback_handler.new request, response
+    private
+
+    attr_reader :request, :response, :dispatch
+
+    def reply text, **opts
+      response.reply request, text, **opts
+    end
+
+    def run other, *args
+      h = dispatch[other] || other.new(dispatch)
+      h.call request, response
+    end
+
+    def callbacks
+      dispatch.callbacks
+    end
   end
 
-  def self.dispatch request, response, handlers:
-    find(request, response, handlers: handlers).send :__run__
-  end
-
-  def self.fallback_handler
-    Handlers::Fallback
-  end
 
   class Handler
     Types = Telegram::Bot::Types
 
-    extend Forwardable
-    def_delegators :@request, :user, :message
-
-    attr_reader :response
-
-    def initialize request, response, medlink: nil
-      @request, @response = request, response
-      @medlink = medlink
+    def initialize dispatch
+      @dispatch = dispatch
     end
 
-    def reply text, **opts
-      reply = Bot::Response::Item.new text, **opts
-      response.messages.push reply
-      Bot.reply_to request, reply.to_args
+    def call request, response, *args
+      raise "#{self.class} should define a `run` block" unless self.class.runner
+      response.handlers.push self
+      Delegate.new(
+        dispatch:  dispatch,
+        request:   request,
+        response:  response
+      ).instance_exec(*args, &self.class.runner)
+      response
     end
 
-    def applies?
+    def applies? request
       if self.class.match
-        message.text && message.text.strip =~ self.class.match
+        request.message.text && request.message.text.strip =~ self.class.match
       else
         false
       end
@@ -47,28 +56,22 @@ module Handlers
       exp ? @match = exp : @match
     end
 
-    def run
+    def self.run &runner
+      @runner = runner
+    end
+
+    def self.runner
+      @runner
+    end
+
+    def inspect
       # :nocov:
-      raise NotImplementedError, "#{self.class} does not implement `run`"
+      "<#{self.class}>"
       # :nocov:
     end
 
     private
 
-    attr_reader :request
-
-    def medlink
-      @medlink ||= Medlink.new phone: user.phone_number
-    end
-
-    def call other
-      other.new(request, response).send :__run__
-    end
-
-    def __run__
-      response.handlers.push self
-      run
-      response
-    end
+    attr_reader :dispatch
   end
 end

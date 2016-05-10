@@ -1,7 +1,7 @@
 module Handlers
   class PromptForAction < Handler
-    def run
-      buttons = Bot.callback_data(
+    run do
+      buttons = callbacks.buttons(
         start_new_order:         "Place a New Order",
         show_outstanding_orders: "Show My Outstanding Orders",
         show_supply_list:        "List Available Supplies"

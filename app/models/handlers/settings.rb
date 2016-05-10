@@ -1,10 +1,8 @@
 module Handlers
   class Settings < Handler
-    def applies?
-      message.text =~ /^\/?settings/i
-    end
+    match /^\/?settings/i
 
-    def run
+    run do
       reply "TODO: show settings message"
     end
   end

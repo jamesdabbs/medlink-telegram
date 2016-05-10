@@ -1,14 +1,21 @@
+# TODO: there's a lot of overlap between this and the integration helpers
 module HandlerHelpers
   def subject
     described_class
   end
 
   def request
-    @request ||= Bot::Request::Test.new
+    @request ||= instance_double Bot::Request, user: nil, medlink: medlink
+  end
+  def user= u
+    allow(request).to receive(:user).and_return(u)
+  end
+  def message= m
+    allow(request).to receive(:message).and_return(m)
   end
 
   def response
-    @response ||= Bot::Response.new
+    @response ||= Bot::Response.new responder: ->(*_) { }
   end
 
   def medlink
@@ -20,13 +27,11 @@ module HandlerHelpers
   end
 
   def run user: nil, message: nil, text: "", with: {}
-    request.user    = user if user
-    request.message = message || build(:message, text: text)
+    self.user    = user if user
+    self.message = message || build(:message, text: text)
 
-    handler = described_class.new request, response, medlink: medlink
-    with.any? ? handler.run(**with) : handler.run
-
-    response
+    # TODO: don't hardcode the dispatcher
+    described_class.new(Medbot.dispatch).call request, response, **with
   end
 
   def messages
@@ -40,8 +45,8 @@ end
 
 RSpec::Matchers.define :route do |text|
   match do |klass|
-    request.message = build :message, text: text
-    handler = Handlers.find request, Bot::Response.new, handlers: Medbot.handlers
+    self.message = build :message, text: text
+    handler = Medbot.dispatch.find(request)
     klass == handler.class
   end
 end

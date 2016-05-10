@@ -19,20 +19,20 @@ describe TelegramController do
   it "can receive an update" do
     expect do
       post :receive, params: { token: Figaro.env.telegram_token!, telegram: update }
-    end.to change { Message.count }.by 1
+    end.to change { Receipt.count }.by 1
 
     expect(response).to be_successful
 
-    m = Message.last
-    expect(m).to be_handled
-    expect(m.error).to be_nil
-    expect(m.response.first["text"]).to match /welcome.*number/i
+    r = Receipt.last
+    expect(r).to be_handled
+    expect(r.error).to be_nil
+    expect(r.response.first.text).to match /welcome.*number/i
   end
 
   it "requires a token" do
     expect do
       post :receive, params: { token: "", telegram: update }
-    end.not_to change { Message.count }
+    end.not_to change { Receipt.count }
 
     expect(response).to be_bad_request
   end
@@ -41,7 +41,7 @@ describe TelegramController do
     token = Figaro.env.telegram_token! + "a"
     expect do
       post :receive, params: { token: token, telegram: update }
-    end.not_to change { Message.count }
+    end.not_to change { Receipt.count }
 
     expect(response).to be_bad_request
   end

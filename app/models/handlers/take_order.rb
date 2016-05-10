@@ -1,12 +1,14 @@
 module Handlers
   class TakeOrder < Handler
-    def applies?
-      match.present?
+    def applies? request
+      match(request.message).present?
     end
 
-    def run finder: nil, placer: nil
+    # FIXME: of course the delegate nonsense was too clever here, and
+    #   now I can't reference helper methods
+    run do |finder: nil, placer: nil|
       finder ||= SupplyFinder.new(medlink: medlink)
-      result = finder.run parsed
+      result = finder.run parsed(message)
 
       placer ||= OrderPlacer.new(medlink: medlink)
       placer.run result.recognized
@@ -28,12 +30,12 @@ module Handlers
 
     private
 
-    def match
+    def match message
       message.text.match(/^\/?order(.*)/)
     end
 
-    def parsed
-      match[1].split(",").map(&:strip)
+    def parsed message
+      match(message)[1].split(",").map(&:strip)
     end
   end
 end
