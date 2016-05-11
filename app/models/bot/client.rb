@@ -9,11 +9,10 @@ class Bot
     end
 
     def reply_routing_keys request
-      message = request.message
-      if message.try :chat
-        { chat_id: message.chat.id }
-      elsif message.try(:message).try :chat
-        { chat_id: message.message.chat.id }
+      if request.try :chat
+        { chat_id: request.chat.id }
+      elsif request.try(:message).try :chat
+        { chat_id: request.message.chat.id }
       else
         raise "Don't know how to reply to #{request}"
       end

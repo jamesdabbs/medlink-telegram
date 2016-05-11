@@ -1,7 +1,5 @@
 class Receipt < ApplicationRecord
-  # N.B. We expect to get a few messages from a user before we can start
-  #      recording this.
-  belongs_to :user, required: false
+  belongs_to :user
 
   serialize :request,  JSON
   serialize :error,    JSON

@@ -23,11 +23,12 @@ module Factories
       shortcode: shortcode || rand.to_s
   end
 
-  def build_user name: nil, ordering: false
-    instance_double User,
-      first_name: name || rand.to_s,
-      name:       name || rand.to_s,
-      ordering?:  ordering
+  def build_user name: nil, ordering: false, phone_number: nil
+    User.new \
+      first_name:   name || rand.to_s,
+      last_name:    name || rand.to_s,
+      ordering:     ordering,
+      phone_number: phone_number
   end
 
   def build_message text:, contact: nil, chat_id: nil

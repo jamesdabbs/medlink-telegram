@@ -1,7 +1,7 @@
 class Bot
-  def call request, **opts
+  def call message, **opts
     response = Bot::Response.new responder: responder
-    context  = Handlers::Context.new request, response, dispatch, **opts
+    context  = Handlers::Context.new message, response, dispatch, **opts
 
     recorder.call context do
       dispatch.call context
@@ -9,12 +9,8 @@ class Bot
   end
 
   def receive update:
-    request = Request.new update.message || update.callback.query
-    handle request: request
-  end
-
-  def handle request:
-    call request
+    message = update.message || update.callback.query
+    call message
   end
 
   attr_reader :recorder, :dispatch, :responder
@@ -31,5 +27,6 @@ class Bot
 
   def initialize recorder:, dispatch:, responder:
     @recorder, @dispatch, @responder = recorder, dispatch, responder
+    freeze
   end
 end

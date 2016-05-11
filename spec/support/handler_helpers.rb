@@ -6,17 +6,14 @@ module HandlerHelpers
 
   def context
     @context ||= Handlers::Context.new(
-      request, response, Medbot.dispatch, medlink: medlink)
+      build(:message, text: ""), response, Medbot.dispatch, medlink: medlink)
   end
 
-  def request
-    @request ||= instance_double Bot::Request, user: nil, medlink: medlink
-  end
   def user= u
-    allow(request).to receive(:user).and_return(u)
+    allow(context).to receive(:user).and_return(u)
   end
   def message= m
-    allow(request).to receive(:message).and_return(m)
+    allow(context).to receive(:message).and_return(m)
   end
 
   def response
@@ -28,7 +25,7 @@ module HandlerHelpers
   end
 
   def pcv
-    @pcv ||= build User, name: "PCV"
+    @pcv ||= build User, name: "PCV", phone_number: "1234"
   end
 
   def run user: nil, message: nil, text: "", with: nil
@@ -49,13 +46,11 @@ end
 RSpec::Matchers.define :route do |text|
   match do |klass|
     self.message = build :message, text: text
-    handler = Medbot.dispatch.find(request)
-    klass == handler.class
+    @found = Medbot.dispatch.find(context).class
+    klass == @found
   end
-end
 
-RSpec::Matchers.define :use_handler do |klass|
-  match do |response|
-    response.handlers.any? { |h| h.is_a? klass }
+  failure_message do |klass|
+    "Expected `#{text}` to route to #{klass}, not #{@found}"
   end
 end

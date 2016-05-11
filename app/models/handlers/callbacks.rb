@@ -1,7 +1,7 @@
 module Handlers
   class Callbacks < Handler
-    def applies? request
-      request.message.is_a? Types::CallbackQuery
+    def applies? c
+      c.message.is_a? Types::CallbackQuery
     end
 
     def call c

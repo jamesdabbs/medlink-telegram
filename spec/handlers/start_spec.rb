@@ -14,9 +14,9 @@ describe Handlers::Start, handler: true do
   end
 
   it "welcomes a user with contact info" do
-    user = double "User", first_name: "User"
-
+    user = User.new first_name: "User", phone_number: "a lot of fives"
     run user: user, text: "/start"
+
     expect(messages.count).to eq 2
     expect(messages.first.text).to eq "Welcome back!"
     expect(messages.last.text).to eq "What can I do for you, User?"

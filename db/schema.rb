@@ -26,7 +26,8 @@ ActiveRecord::Schema.define(version: 20160420200623) do
   add_index "receipts", ["user_id"], name: "index_messages_on_user_id"
 
   create_table "users", force: :cascade do |t|
-    t.integer  "telegram_id"
+    t.integer  "telegram_id", null: false, unique: true
+    t.integer  "medlink_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.string   "first_name"

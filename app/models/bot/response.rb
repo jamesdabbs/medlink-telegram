@@ -1,9 +1,9 @@
 class Bot
   class Response
-    attr_reader :messages, :handlers
+    attr_reader :messages
 
     def initialize responder:
-      @handlers, @messages = [], []
+      @messages  = []
       @responder = responder
     end
 

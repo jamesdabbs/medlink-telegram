@@ -54,7 +54,7 @@ module IntegrationHelpers
   end
 
   def send_message message
-    bot.call Bot::Request.new(message), medlink: medlink
+    bot.call message, medlink: medlink
   end
 
   def see match, buttons: nil

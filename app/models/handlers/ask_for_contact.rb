@@ -1,7 +1,7 @@
 module Handlers
   class AskForContact < Handler
-    def applies? request
-      request.user.nil?
+    def applies? c
+      !c.user.registered?
     end
 
     def call c

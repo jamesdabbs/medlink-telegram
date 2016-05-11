@@ -1,9 +1,9 @@
 module Handlers
   class Start < Handler
-    match /^\/?start/i
+    command :start
 
     def call c
-      if c.user
+      if c.user.registered?
         c.reply "Welcome back!"
         c.call PromptForAction
       else

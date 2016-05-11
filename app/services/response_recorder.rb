@@ -1,10 +1,11 @@
 class ResponseRecorder
   def initialize persist:, error_handler:
     @persist, @error_handler = persist, error_handler
+    freeze
   end
 
   def call c, &block
-    receipt = Receipt.new request: c.request.message.to_h
+    receipt = Receipt.new request: c.message.to_h, user: c.user
     persist.call receipt
 
     block.call

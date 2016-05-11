@@ -18,6 +18,11 @@ module Handlers
       exp ? @match = exp : @match
     end
 
+    def self.command word
+      raise "Command should be a single word" unless word.is_a?(Symbol)
+      match /^\/?#{word}/i
+    end
+
     def inspect
       # :nocov:
       "<#{self.class}>"
