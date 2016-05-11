@@ -4,11 +4,11 @@ module Handlers
       request.message.is_a? Types::CallbackQuery
     end
 
-    run do
+    def call c
       # TODO: what about other callback data
-      key     = JSON.parse(message.data).fetch "key"
-      handler = callbacks[key]
-      run handler if handler # TODO: what if none match?
+      key     = JSON.parse(c.message.data).fetch "key"
+      handler = c.callbacks[key]
+      c.call handler if handler # TODO: what if none match?
     end
   end
 end

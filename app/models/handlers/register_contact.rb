@@ -4,14 +4,14 @@ module Handlers
       !request.user && request.message.contact
     end
 
-    run do
-      if User.register_from_contact(message.contact)
+    def call c
+      if User.register_from_contact(c.message.contact)
         kb = Types::ReplyKeyboardHide.new(text: "", hide_keyboard: true)
-        reply "Awesome, got it!", reply_markup: kb
+        c.reply "Awesome, got it!", reply_markup: kb
 
-        run PromptForAction
+        c.call PromptForAction
       else
-        reply "Hrm. It looks like we couldn't find your number in the system. Is there another number you use?"
+        c.reply "Hrm. It looks like we couldn't find your number in the system. Is there another number you use?"
       end
     end
   end

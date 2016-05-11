@@ -12,9 +12,5 @@ class Bot
       @messages.push m
       @responder.call request, m
     end
-
-    def handled?
-      @handlers.none? { |h| h.is_a? Handlers::Fallback }
-    end
   end
 end

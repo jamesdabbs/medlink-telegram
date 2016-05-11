@@ -1,8 +1,8 @@
 module Handlers
   class Error < Handler
-    run do |error|
-      Rollbar.error error
-      reply "Uh-oh. Looks like something went wrong: #{error}"
+    def call c
+      Rollbar.error c.error
+      c.reply "Uh-oh. Looks like something went wrong: #{c.error}"
     end
   end
 end

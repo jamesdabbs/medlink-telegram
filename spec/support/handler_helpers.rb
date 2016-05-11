@@ -4,6 +4,11 @@ module HandlerHelpers
     described_class
   end
 
+  def context
+    @context ||= Handlers::Context.new(
+      request, response, Medbot.dispatch, medlink: medlink)
+  end
+
   def request
     @request ||= instance_double Bot::Request, user: nil, medlink: medlink
   end
@@ -26,12 +31,10 @@ module HandlerHelpers
     @pcv ||= build User, name: "PCV"
   end
 
-  def run user: nil, message: nil, text: "", with: {}
+  def run user: nil, message: nil, text: "", with: nil
     self.user    = user if user
     self.message = message || build(:message, text: text)
-
-    # TODO: don't hardcode the dispatcher
-    described_class.new(Medbot.dispatch).call request, response, **with
+    with ? context.call(described_class, **with) : context.call(described_class)
   end
 
   def messages

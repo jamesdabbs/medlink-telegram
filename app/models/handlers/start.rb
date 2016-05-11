@@ -2,12 +2,12 @@ module Handlers
   class Start < Handler
     match /^\/?start/i
 
-    run do
-      if user
-        reply "Welcome back!"
-        run PromptForAction
+    def call c
+      if c.user
+        c.reply "Welcome back!"
+        c.call PromptForAction
       else
-        run AskForContact
+        c.call AskForContact
       end
     end
   end

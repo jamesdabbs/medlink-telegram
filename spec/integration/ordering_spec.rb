@@ -41,10 +41,8 @@ describe "Ordering", integration: true do
   end
 
   context "bot with errors" do
-    let(:bot) { Bot.new(
-      recorder:  Medbot.recorder,
-      responder: Medbot.responder,
-      dispatch:  ->(req,res) { raise "Bot failure" }
+    let(:bot) { Medbot.with(
+      dispatch:  ->(c) { raise "Bot failure" }
     ) }
 
     it "records failures" do

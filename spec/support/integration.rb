@@ -2,7 +2,7 @@ module IntegrationHelpers
   def test_recorder
     ResponseRecorder.new(
       persist:       ->(r) { receipts.push(r) unless receipts.include?(r) },
-      error_handler: ->(_,_,e) { raise e }
+      error_handler: ->(c) { raise c.error }
     )
   end
 
@@ -23,18 +23,16 @@ module IntegrationHelpers
   end
 
   def testbot
-    Bot.new(
+    Medbot.with(
       recorder:  test_recorder,
-      responder: test_responder,
-      dispatch:  Medbot.dispatch
+      responder: test_responder
     )
   end
 
   def failbot
-    Bot.new(
-      recorder:  Medbot.recorder,
+    Medbot.with(
       responder: test_responder,
-      dispatch:  ->(req,res) { raise "Bot failure" }
+      dispatch:  ->(c) { raise "Bot failure" }
     )
   end
 
@@ -56,7 +54,7 @@ module IntegrationHelpers
   end
 
   def send_message message
-    bot.call Bot::Request.new message, medlink: medlink
+    bot.call Bot::Request.new(message), medlink: medlink
   end
 
   def see match, buttons: nil

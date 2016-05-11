@@ -1,25 +1,26 @@
 module Handlers
   class ContinueOrder < Handler
-    def applies? request
-      return false unless request.user.ordering?
-      finder = SupplyFinder.new(medlink: request.medlink)
-      finder.has_match? request.message.text
+    def applies? c
+      return false unless c.user.ordering?
+      supply_finder(c).has_match? c.message.text
     end
 
-    run do
-      finder = SupplyFinder.new(medlink: request.medlink)
-      finder.has_match? request.message.text
+    def supply_finder c
+      SupplyFinder.new(medlink: c.medlink)
+    end
 
+    def call c
+      finder = supply_finder c
       # TODO: batch these up and send when the user is done?
-      if m = finder.near_match(message.text)
-        medlink.new_order supplies: [m]
-        reply "Requested #{m.name}. Anything else?"
+      if m = finder.near_match(c.message.text)
+        c.medlink.new_order supplies: [m]
+        c.reply "Requested #{m.name}. Anything else?"
       else
-        suggestions = @finder.suggestions(message.text).map do |s|
+        suggestions = finder.suggestions(c.message.text).map do |s|
           "#{s.shortcode} - #{s.name}"
         end.join "\n"
 
-        reply "I'm not entirely sure what '#{message.text}' is. Did you mean one of the following?<pre>#{no}</pre>", parse_mode: "html"
+        c.reply "I'm not entirely sure what '#{c.message.text}' is. Did you mean one of the following?<pre>#{suggestions}</pre>", parse_mode: "html"
 
         # TODO: what if the user replies "no"?
       end

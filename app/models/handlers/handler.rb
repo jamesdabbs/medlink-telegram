@@ -6,17 +6,6 @@ module Handlers
       @dispatch = dispatch
     end
 
-    def call request, response, *args
-      raise "#{self.class} should define a `run` block" unless self.class.runner
-      response.handlers.push self
-      Delegate.new(self,
-        dispatch:  dispatch,
-        request:   request,
-        response:  response
-      ).instance_exec *args, &self.class.runner
-      response
-    end
-
     def applies? request
       if self.class.match
         request.message.text && request.message.text.strip =~ self.class.match
@@ -27,14 +16,6 @@ module Handlers
 
     def self.match exp=nil
       exp ? @match = exp : @match
-    end
-
-    def self.run &runner
-      @runner = runner
-    end
-
-    def self.runner
-      @runner
     end
 
     def inspect

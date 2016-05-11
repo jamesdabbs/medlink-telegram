@@ -3,18 +3,18 @@ class ResponseRecorder
     @persist, @error_handler = persist, error_handler
   end
 
-  def call request, responder, &block
-    receipt = Receipt.new request: request.message.to_h
+  def call c, &block
+    receipt = Receipt.new request: c.request.message.to_h
     persist.call receipt
 
-    response = Bot::Response.new responder: responder
-    block.call response
+    block.call
   rescue StandardError => e
     receipt.error = serialize_error(e)
-    error_handler.call request, response, e
+    c.error = e
+    error_handler.call c
   ensure
     receipt.assign_attributes \
-      response: response.messages, handled: response.handled?
+      response: c.response.messages, handled: c.handled?
     persist.call receipt
   end
 

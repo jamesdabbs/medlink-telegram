@@ -1,7 +1,10 @@
 class Bot
-  def call request
-    recorder.call request, responder do |response|
-      dispatch.call request, response
+  def call request, **opts
+    response = Bot::Response.new responder: responder
+    context  = Handlers::Context.new request, response, dispatch, **opts
+
+    recorder.call context do
+      dispatch.call context
     end
   end
 
@@ -15,6 +18,14 @@ class Bot
   end
 
   attr_reader :recorder, :dispatch, :responder
+
+  def with **opts
+    self.class.new(
+      recorder:  opts[:recorder]  || recorder,
+      dispatch:  opts[:dispatch]  || dispatch,
+      responder: opts[:responder] || responder
+    )
+  end
 
   private
 

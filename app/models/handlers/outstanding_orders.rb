@@ -4,11 +4,11 @@ module Handlers
 
     match /^(show|outstanding) orders$/i
 
-    run do
-      orders = medlink.outstanding_orders
+    def call c
+      orders = c.medlink.outstanding_orders
       unless orders.any?
-        reply "You don't appear to have any outstanding orders."
-        next
+        c.reply "You don't appear to have any outstanding orders."
+        return
       end
 
       groups = orders.
@@ -17,7 +17,7 @@ module Handlers
 
       groups.each do |ago, os|
         supplies = os.map { |o| "#{o.supply.shortcode} - #{o.supply.name}" }
-        reply "From #{ago} ago<pre>#{supplies.join "\n"}</pre>", parse_mode: "html"
+        c.reply "From #{ago} ago<pre>#{supplies.join "\n"}</pre>", parse_mode: "html"
       end
     end
   end

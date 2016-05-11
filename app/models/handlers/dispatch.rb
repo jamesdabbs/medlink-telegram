@@ -1,27 +1,44 @@
 module Handlers
   class Dispatch
     def initialize handlers:, callbacks:
-      @handlers  = handlers.map { |klass| klass.new self }
+      # N.B. Handlers are assumed to be state-free, so this klass => instance
+      #   cache should be fine
+      @handlers = {}
+      handlers.each { |klass| register_handler klass }
       @callbacks = callbacks
     end
 
-    def call request, response, *args
-      find(request).call request, response, *args
+    def call context
+      context.call find context
     end
 
-    def find request
-      match = handlers.find { |handler| handler.applies? request }
-      match || self[Handlers::Fallback]
+    def find context
+      match = handlers.find { |_, handler| handler.applies? context }
+      if match
+        match.last
+      else
+        self[Handlers::Fallback]
+      end
     end
 
     def [] klass
-      handlers.find { |h| h.is_a? klass }
+      handlers[klass] || register_handler(klass)
     end
 
     attr_reader :callbacks
 
+    def inspect
+      # :nocov:
+      "<#{self.class.name}(#{handlers.count} handlers, #{callbacks.count} callbacks)>"
+      # :nocov:
+    end
+
     private
 
     attr_reader :handlers
+
+    def register_handler klass
+      handlers[klass] = klass.new(self).tap(&:freeze)
+    end
   end
 end

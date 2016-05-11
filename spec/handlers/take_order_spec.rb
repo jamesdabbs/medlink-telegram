@@ -28,7 +28,7 @@ describe Handlers::TakeOrder, handler: true do
   end
 
   it "gives feedback on orders" do
-    allow(medlink).to receive(:available_supplies).and_return []
+    expect(medlink).to receive(:available_supplies).and_return []
 
     placer = instance_double OrderPlacer,
       new_orders:          [build(Supply, name: "a"), build(Supply, name: "b")],

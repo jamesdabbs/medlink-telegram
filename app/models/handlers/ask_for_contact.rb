@@ -4,11 +4,11 @@ module Handlers
       request.user.nil?
     end
 
-    run do
+    def call c
       markup = Types::ReplyKeyboardMarkup.new keyboard: [
         Types::KeyboardButton.new(text: "Share phone number", request_contact: true)
       ]
-      reply "Welcome to Medlink! We'll need your phone number to look you up.",
+      c.reply "Welcome to Medlink! We'll need your phone number to look you up.",
         reply_markup: markup
     end
   end
