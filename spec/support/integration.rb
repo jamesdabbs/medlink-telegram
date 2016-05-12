@@ -79,6 +79,11 @@ module IntegrationHelpers
     end
     raise "No button matched #{matcher}"
   end
+
+  def as user
+    @chat_id = user.telegram_id
+    yield
+  end
 end
 
 RSpec.configure do |config|

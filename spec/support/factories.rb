@@ -23,12 +23,17 @@ module Factories
       shortcode: shortcode || rand.to_s
   end
 
-  def build_user name: nil, ordering: false, phone_number: nil
+  def pcv
+    @pcv ||= build User, name: "PCV", phone_number: "1234", telegram_id: rand(1 .. 1000)
+  end
+
+  def build_user name: nil, ordering: false, phone_number: nil, telegram_id: nil
     User.new \
       first_name:   name || rand.to_s,
       last_name:    name || rand.to_s,
       ordering:     ordering,
-      phone_number: phone_number
+      phone_number: phone_number,
+      telegram_id:  telegram_id || rand(1 .. 10_000)
   end
 
   def build_message text:, contact: nil, chat_id: nil

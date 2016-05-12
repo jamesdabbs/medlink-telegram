@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160420200623) do
+ActiveRecord::Schema.define(version: 20160511211416) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "receipts", force: :cascade do |t|
     t.integer  "user_id"
@@ -21,12 +24,12 @@ ActiveRecord::Schema.define(version: 20160420200623) do
     t.text     "error"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_messages_on_user_id", using: :btree
   end
 
-  add_index "receipts", ["user_id"], name: "index_messages_on_user_id"
-
   create_table "users", force: :cascade do |t|
-    t.integer  "telegram_id", null: false, unique: true
+    t.integer  "telegram_id",  null: false
+    t.string   "telegram_username"
     t.integer  "medlink_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
@@ -34,6 +37,7 @@ ActiveRecord::Schema.define(version: 20160420200623) do
     t.string   "last_name"
     t.string   "phone_number"
     t.boolean  "ordering"
+    t.boolean  "needs_help"
   end
 
 end

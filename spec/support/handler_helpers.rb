@@ -24,10 +24,6 @@ module HandlerHelpers
     @medlink ||= instance_double Medlink
   end
 
-  def pcv
-    @pcv ||= build User, name: "PCV", phone_number: "1234"
-  end
-
   def run user: nil, message: nil, text: "", with: nil
     self.user    = user if user
     self.message = message || build(:message, text: text)

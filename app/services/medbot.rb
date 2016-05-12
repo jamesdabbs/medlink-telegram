@@ -9,7 +9,9 @@ callbacks = CallbackRegistry.build(
   show_request_history:    Handlers::ShowRequestHistory,
   show_supply_list:        Handlers::ShowSupplyList,
   show_outstanding_orders: Handlers::OutstandingOrders,
-  start_new_order:         Handlers::StartOrder
+  start_new_order:         Handlers::StartOrder,
+  expand_message_history:  Handlers::ExpandMessageHistory,
+  resolve_support:         Handlers::ResolveSupport
 )
 
 dispatch = Handlers::Dispatch.new(
@@ -20,6 +22,7 @@ dispatch = Handlers::Dispatch.new(
     Handlers::RegisterContact,
     Handlers::AskForContact,
     Handlers::Help,
+    Handlers::PageSupport,
 
     Handlers::ShowSupplyList,
     Handlers::OutstandingOrders,
@@ -37,7 +40,7 @@ dispatch = Handlers::Dispatch.new(
   callbacks: callbacks
 )
 
-telegram  = Bot::Client.new Figaro.env.telegram_token!
+telegram  = Bot::Client.build
 responder = ->(request, message) do
   telegram.reply_to request, message.to_args
 end

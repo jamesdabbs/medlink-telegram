@@ -1,5 +1,11 @@
 class Bot
   class Client
+    SUPPORT_ID = :support
+
+    def self.build
+      new Figaro.env.telegram_token!
+    end
+
     def initialize token
       @api = Telegram::Bot::Client.new(token).api
     end
@@ -20,14 +26,27 @@ class Bot
 
     def message **opts
       if Rails.env.test?
-        messages.push opts
+        messages[opts[:chat_id]] ||= []
+        messages[opts[:chat_id]].push opts
       else
         @client.send_message **opts
       end
     end
 
+    def message_support text, **opts
+      opts[:text]    = text
+      opts[:chat_id] = SUPPORT_ID
+
+      if Rails.env.test?
+        messages[:support] ||= []
+        messages[:support].push opts
+      else
+        @client.send_message opts
+      end
+    end
+
     def messages
-      @messages ||= []
+      @messages ||= {}
     end
   end
 end
