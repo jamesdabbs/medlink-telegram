@@ -23,7 +23,7 @@ namespace :webhook do
   task ngrok: :environment do
     fork do
       sleep 5
-      set_webhook_url
+      set_webhook get_ngrok_url
     end
 
     exec "ngrok http 3000"

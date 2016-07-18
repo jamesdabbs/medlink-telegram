@@ -8,7 +8,8 @@ describe SupplyFinder do
         double("Supply", name: "Mosquito Nets", shortcode: "MOSQN")
       ]
 
-      medlink = instance_double Medlink
+      medlink = instance_double Medlink::User::Client
+
       expect(medlink).to receive(:available_supplies).and_return supplies
 
       @finder = SupplyFinder.new medlink: medlink

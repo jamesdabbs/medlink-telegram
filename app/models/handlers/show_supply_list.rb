@@ -1,6 +1,6 @@
 module Handlers
   class ShowSupplyList < Handler
-    match /^\/?list/i
+    command :list
 
     def call c
       response = c.medlink.available_supplies.map do |s|

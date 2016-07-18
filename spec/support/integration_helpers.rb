@@ -18,10 +18,6 @@ module IntegrationHelpers
     @_replies ||= []
   end
 
-  def medlink
-    @_medlink ||= instance_double(Medlink, authorize_from_phone_number!: true)
-  end
-
   def testbot
     Medbot.with(
       recorder:  test_recorder,
@@ -87,7 +83,6 @@ module IntegrationHelpers
 end
 
 RSpec.configure do |config|
-  config.include IntegrationHelpers, integration: true
   config.before :each, integration: true do
     @chat_id = rand 1 .. 1_000_000
     receipts.clear

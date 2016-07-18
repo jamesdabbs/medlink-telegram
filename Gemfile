@@ -2,37 +2,28 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 
-gem 'rails', '>= 5.0.0.rc1', '< 5.1'
+gem 'rails', '~> 5.0.0'
 gem 'pg'
 gem 'puma'
 gem 'sass-rails', '~> 5.0'
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2'
 gem 'uglifier', '>= 1.3.0'
 gem 'jquery-rails'
-gem 'turbolinks', '~> 5.x'
 gem 'rollbar'
+gem 'pry-rails'
 
 gem 'jbuilder', '~> 2.0'
 
-gem 'contracts'
 gem 'figaro'
+gem 'medlink', path: File.expand_path('../../medlink-gem', __FILE__)
 gem 'telegram-bot-ruby', require: 'telegram/bot'
-
-gem 'rest-client'
-gem 'api-auth'
-
 gem 'text'
+
+gem 'json', '~> 2.0'
 
 group :development, :test do
   gem 'httparty'
-  gem 'byebug'
-  gem 'pry-rails'
-
-  # Pulling these from master fixes a few Rails 5 compatibility issues
-  gem 'rspec', github: 'rspec/rspec'
-  %w( core expectations mocks support rails ).each do |m|
-    gem "rspec-#{m}", github: "rspec/rspec-#{m}"
-  end
+  gem 'rspec-rails'
 end
 
 group :development do
@@ -44,4 +35,5 @@ end
 group :test do
   gem 'simplecov'
   gem 'coveralls'
+  gem 'factory_girl_rails'
 end

@@ -35,7 +35,9 @@ class Bot
       end
 
       def inspect
+        # :nocov:
         %|<#{self.class.name}("#{text}", buttons: #{buttons})>|
+        # :nocov:
       end
     end
   end

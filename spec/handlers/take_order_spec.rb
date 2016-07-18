@@ -31,8 +31,8 @@ describe Handlers::TakeOrder, handler: true do
     expect(medlink).to receive(:available_supplies).and_return []
 
     placer = instance_double OrderPlacer,
-      new_orders:          [build(Supply, name: "a"), build(Supply, name: "b")],
-      pre_existing_orders: [build(Supply, name: "c"), build(Supply, name: "d")],
+      new_orders:          supplies("a", "b"),
+      pre_existing_orders: supplies("c", "d"),
       user_errors:         ["asdf", "zxcv"]
     allow(placer).to receive(:run)
 

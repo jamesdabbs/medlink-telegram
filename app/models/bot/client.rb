@@ -29,7 +29,7 @@ class Bot
         messages[opts[:chat_id]] ||= []
         messages[opts[:chat_id]].push opts
       else
-        @client.send_message **opts
+        api.send_message **opts
       end
     end
 
@@ -41,12 +41,16 @@ class Bot
         messages[:support] ||= []
         messages[:support].push opts
       else
-        @client.send_message opts
+        api.send_message **opts
       end
     end
 
     def messages
       @messages ||= {}
     end
+
+    private
+
+    attr_reader :api
   end
 end

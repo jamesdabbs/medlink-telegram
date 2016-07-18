@@ -1,9 +1,9 @@
 module Factories
   def build klass, **opts
     builder = {
-      User      => :build_user,
-      Supply    => :build_supply,
-      Order     => :build_order,
+      User            => :build_user,
+      Medlink::Supply => :build_supply,
+      Medlink::Order  => :build_order,
       :message  => :build_message,
       :contact  => :build_contact,
       :callback => :build_callback
@@ -17,10 +17,19 @@ module Factories
   end
 
   def build_supply name: nil, shortcode: nil
-    instance_double Supply,
+    instance_double Medlink::Supply,
       id:        rand(1 .. 1000),
       name:      name      || rand.to_s,
       shortcode: shortcode || rand.to_s
+  end
+
+  def supplies *names, total: nil
+    named = names.map { |n| build_supply name: n }
+    if total
+      named + (total - named.count).times.map { build_supply }
+    else
+      named
+    end
   end
 
   def pcv
@@ -58,7 +67,7 @@ module Factories
 
   def build_order supply: nil
     supply ||= build_supply
-    instance_double Order, supply: supply, placed_at: rand(1..14).days.ago
+    instance_double Medlink::Order, supply: supply, placed_at: rand(1..14).days.ago
   end
 
   def build_contact user_id: nil

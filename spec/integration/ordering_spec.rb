@@ -12,13 +12,13 @@ describe "Ordering", integration: true do
       see /what can i do for you/i, buttons: 3
 
       click /place.*order/i
-      see /say.*list.*or.*say.*done/i
+      see   /say.*list.*or.*say.*done/i
 
       expect(medlink).to receive(:available_supplies).
         at_least(1).times.
-        and_return [build(Supply, name: "Bandages"), build(Supply)]
+        and_return supplies("Bandages", total: 3)
       say "list"
-      expect(replies.last.text.lines.count).to eq 2
+      expect(replies.last.text.lines.count).to eq 3
       expect(replies.last.text).to include "Bandages"
 
       expect(medlink).to receive(:new_order)

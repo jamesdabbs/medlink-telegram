@@ -20,10 +20,6 @@ module HandlerHelpers
     @response ||= Bot::Response.new responder: ->(*_) { }
   end
 
-  def medlink
-    @medlink ||= instance_double Medlink
-  end
-
   def run user: nil, message: nil, text: "", with: nil
     self.user    = user if user
     self.message = message || build(:message, text: text)

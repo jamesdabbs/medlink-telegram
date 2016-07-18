@@ -15,7 +15,7 @@ describe Handlers::OutstandingOrders, handler: true do
   end
 
   it "shows past orders" do
-    orders = 3.times.map { build Order }
+    orders = 3.times.map { build Medlink::Order }
     expect(medlink).to receive(:outstanding_orders).and_return orders
 
     run
