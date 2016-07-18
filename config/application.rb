@@ -2,14 +2,31 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+
+class Container
+  include Dry::Container::Mixin
+
+  # Items should resolve to service objects (with `#call` as their api), but we register
+  # procs (so that we can defer builing until the app is loaded).
+  # Rather than getting lost in `call`s, we'll use this custom resolver
+  configure do |config|
+    config.registry = ->(container, key, builder, options) { container[key] = builder }
+    config.resolver = ->(container, key) {
+      container[:_cache]      ||= Concurrent::Hash.new
+      container[:_cache][key] ||= container.fetch(key).call
+    }
+  end
+end
 
 module MedlinkTelegram
   class Application < Rails::Application
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+    config.container = Container.new.tap do |c|
+      c.register :bot, -> { Medbot }
+    end
+  end
+
+  def self.bot
+    Rails.application.config.container.resolve :bot
   end
 end

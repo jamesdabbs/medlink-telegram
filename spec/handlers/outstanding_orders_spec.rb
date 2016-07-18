@@ -21,7 +21,7 @@ describe Handlers::OutstandingOrders, handler: true do
     run
 
     orders.each do |o|
-      expect(replies.join "\n").to include o.supply.name
+      expect(replies.map(&:text).join "\n").to include o.supply.name
     end
   end
 end

@@ -29,7 +29,7 @@ module Handlers
 
     def inspect
       # :nocov:
-      "<#{self.class.name}(#{handlers.count} handlers, #{callbacks.count} callbacks)>"
+      "<#{self.class.name}(handlers: #{handlers.keys}, callbacks: #{callbacks.inspect})>"
       # :nocov:
     end
 

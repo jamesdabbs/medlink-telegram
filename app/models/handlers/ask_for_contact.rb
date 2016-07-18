@@ -9,7 +9,7 @@ module Handlers
         Types::KeyboardButton.new(text: "Share phone number", request_contact: true)
       ]
       c.reply "Welcome to Medlink! We'll need your phone number to look you up.",
-        reply_markup: markup
+        markup: markup
     end
   end
 end

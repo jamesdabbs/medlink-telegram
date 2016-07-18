@@ -10,8 +10,8 @@ describe Handlers::Help, handler: true do
 
     it "shows help" do
       run
-      expect(messages.first.buttons).to include "Place a New Order"
-      expect(replies.last).to include "support@pcmedlink.org"
+      expect(replies.first.buttons).to include "Place a New Order"
+      expect(replies.last.text).to include "support@pcmedlink.org"
     end
   end
 

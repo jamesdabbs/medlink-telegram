@@ -9,7 +9,7 @@ module Handlers
 
       if c.user.medlinked?
         kb = Types::ReplyKeyboardHide.new(text: "", hide_keyboard: true)
-        c.reply "Awesome, got it!", reply_markup: kb
+        c.reply "Awesome, got it!", markup: kb
 
         c.call PromptForAction
       else

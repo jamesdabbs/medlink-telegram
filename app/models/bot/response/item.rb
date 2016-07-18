@@ -1,10 +1,10 @@
 class Bot
   class Response
     class Item
-      attr_reader :text
+      attr_reader :text, :markup
 
-      def initialize text, **opts
-        @text, @opts = text, opts
+      def initialize text, markup: nil
+        @text, @markup = text, markup
         freeze
       end
 
@@ -14,10 +14,6 @@ class Bot
         else
           super
         end
-      end
-
-      def markup
-        @opts[:reply_markup]
       end
 
       def buttons
@@ -31,7 +27,12 @@ class Bot
       end
 
       def to_args
-        @opts.merge text: text
+        opts = {
+          parse_mode: "html",
+          text:       text
+        }
+        opts[:reply_markup] = markup if markup
+        opts
       end
 
       def inspect

@@ -1,35 +1,14 @@
 module IntegrationHelpers
-  def test_recorder
-    ResponseRecorder.new(
-      persist:       ->(r) { receipts.push(r) unless receipts.include?(r) },
-      error_handler: ->(c) { raise c.error }
-    )
-  end
-
-  def receipts
-    @_receipts ||= []
-  end
-
-  def test_responder
-    ->(request, message) { replies.push message }
-  end
-
-  def replies
-    @_replies ||= []
-  end
-
-  def testbot
-    Medbot.with(
-      recorder:  test_recorder,
-      responder: test_responder
-    )
-  end
-
-  def failbot
-    Medbot.with(
-      responder: test_responder,
-      dispatch:  ->(c) { raise "Bot failure" }
-    )
+  def testbot db:
+    recorder = if db
+      ResponseRecorder.new(
+        persist:       ->(r) { r.save! validate: false },
+        error_handler: ->(c, error) { raise error }
+      )
+    else
+      noop
+    end
+    MedlinkTelegram.bot.with recorder: recorder
   end
 
   def say text
@@ -53,9 +32,8 @@ module IntegrationHelpers
     bot.call message, medlink: medlink
   end
 
-  def see match, buttons: nil
-    message = replies.find { |m| m.text =~ match }
-    expect(message).to be_present
+  def see pattern, buttons: nil
+    expect(replies.map &:text).to include match pattern
     if buttons
       expect(replies.last.buttons.count).to eq buttons
     end
@@ -79,13 +57,6 @@ module IntegrationHelpers
   def as user
     @chat_id = user.telegram_id
     yield
-  end
-end
-
-RSpec.configure do |config|
-  config.before :each, integration: true do
-    @chat_id = rand 1 .. 1_000_000
-    receipts.clear
-    replies.clear
+    @chat_id = nil
   end
 end

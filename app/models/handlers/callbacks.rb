@@ -6,7 +6,8 @@ module Handlers
 
     def call c
       # TODO: what about other callback data
-      key     = JSON.parse(c.message.data).fetch "key"
+      data    = JSON.parse(c.message.data)
+      key     = data.fetch "key"
       handler = c.callbacks[key]
       c.call handler if handler # TODO: what if none match?
     end

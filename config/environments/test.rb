@@ -39,4 +39,12 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  config.container.register :bot, -> {
+    Medbot.with(
+      telegram: Bot::Client.new(
+        sender: ->(opts) { Mailbox.hold opts }
+      )
+    )
+  }
 end

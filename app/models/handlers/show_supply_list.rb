@@ -8,7 +8,7 @@ module Handlers
       end.join "\n"
 
       c.reply "Here are the supplies currently available in your country:"
-      c.reply "<pre>#{response}</pre>", parse_mode: "html"
+      c.reply "<pre>#{response}</pre>"
     end
   end
 end

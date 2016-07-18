@@ -1,7 +1,14 @@
-class Bot
-  def call message, **opts
-    response = Bot::Response.new responder: responder
-    context  = Handlers::Context.new message, response, dispatch, **opts
+require "medlink/struct"
+
+class Bot < Medlink.struct(:dispatch, :recorder, :telegram)
+  def call message, medlink: nil, user: nil
+    context = Handlers::Context.new(
+      bot:      self,
+      message:  message,
+      response: Bot::Response.new(telegram: telegram),
+      medlink:  medlink,
+      user:     user
+    )
 
     recorder.call context do
       dispatch.call context
@@ -13,20 +20,11 @@ class Bot
     call message
   end
 
-  attr_reader :recorder, :dispatch, :responder
-
-  def with **opts
-    self.class.new(
-      recorder:  opts[:recorder]  || recorder,
-      dispatch:  opts[:dispatch]  || dispatch,
-      responder: opts[:responder] || responder
-    )
+  def valid_token? token
+    token == Figaro.env.telegram_token!
   end
 
-  private
-
-  def initialize recorder:, dispatch:, responder:
-    @recorder, @dispatch, @responder = recorder, dispatch, responder
-    freeze
+  def update_from_telegram telegram
+    Telegram::Bot::Types::Update.new JSON.parse(telegram.to_json)
   end
 end

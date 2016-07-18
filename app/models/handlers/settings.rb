@@ -1,6 +1,6 @@
 module Handlers
   class Settings < Handler
-    match /^\/?settings/i
+    command :settings
 
     def call c
       c.reply "TODO: show settings message"

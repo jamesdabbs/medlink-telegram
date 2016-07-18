@@ -1,6 +1,12 @@
 class User < ApplicationRecord
   validates_presence_of :telegram_id
 
+  has_many :receipts
+
+  def self.support
+    by_telegram_id 999 # TODO
+  end
+
   def self.by_telegram_id id
     User.where(telegram_id: id).first_or_create!
   end
@@ -30,7 +36,7 @@ class User < ApplicationRecord
   def needs_help!
     update! needs_help: true
   end
-  def has_been_helped
+  def has_been_helped!
     update! needs_help: false
   end
 end

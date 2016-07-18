@@ -17,7 +17,7 @@ module Handlers
 
       groups.each do |ago, os|
         supplies = os.map { |o| "#{o.supply.shortcode} - #{o.supply.name}" }
-        c.reply "From #{ago} ago<pre>#{supplies.join "\n"}</pre>", parse_mode: "html"
+        c.reply "From #{ago} ago<pre>#{supplies.join "\n"}</pre>"
       end
     end
   end

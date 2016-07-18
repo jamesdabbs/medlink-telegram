@@ -9,7 +9,7 @@ describe Handlers::ShowSupplyList, handler: true do
 
     run user: pcv
 
-    expect(replies.last).to include "ASDF"
-    expect(replies.last).to include "BNM"
+    expect(replies.last.text).to include "ASDF"
+    expect(replies.last.text).to include "BNM"
   end
 end

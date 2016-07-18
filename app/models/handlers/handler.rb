@@ -29,6 +29,13 @@ module Handlers
       # :nocov:
     end
 
+    def button_markup btns
+      keys = dispatch.callbacks.buttons(btns).map do |d|
+        Types::InlineKeyboardButton.new d
+      end
+      Types::InlineKeyboardMarkup.new inline_keyboard: keys
+    end
+
     private
 
     attr_reader :dispatch

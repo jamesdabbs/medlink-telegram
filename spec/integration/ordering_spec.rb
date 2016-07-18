@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe "Ordering", integration: true do
   context "standard testbot" do
-    let(:bot) { testbot }
+    let(:bot) { testbot db: true }
 
     it "can order successfully" do
       say "/start"
@@ -33,6 +33,7 @@ describe "Ordering", integration: true do
       send_contact_info
       say "trying to do something that the bot isn't ready for"
 
+      receipts = Receipt.all
       expect(receipts.count).to eq 2
       expect(receipts.first).to be_handled
       expect(receipts.last.response.last.text).to include "support@pcmedlink.org"
@@ -41,8 +42,8 @@ describe "Ordering", integration: true do
   end
 
   context "bot with errors" do
-    let(:bot) { Medbot.with(
-      dispatch:  ->(c) { raise "Bot failure" }
+    let(:bot) { MedlinkTelegram.bot.with(
+      dispatch: ->(c) { raise "Bot failure" }
     ) }
 
     it "records failures" do

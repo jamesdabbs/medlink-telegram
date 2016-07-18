@@ -40,13 +40,8 @@ dispatch = Handlers::Dispatch.new(
   callbacks: callbacks
 )
 
-telegram  = Bot::Client.build
-responder = ->(request, message) do
-  telegram.reply_to request, message.to_args
-end
-
 Medbot = Bot.new(
-  recorder:  recorder,
-  dispatch:  dispatch,
-  responder: responder
+  dispatch: dispatch,
+  recorder: recorder,
+  telegram: Bot::Client.build
 )

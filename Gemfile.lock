@@ -256,6 +256,7 @@ PLATFORMS
 DEPENDENCIES
   coffee-rails (~> 4.2)
   coveralls
+  dry-container
   factory_girl_rails
   figaro
   httparty

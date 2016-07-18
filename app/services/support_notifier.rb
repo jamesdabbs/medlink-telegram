@@ -1,12 +1,17 @@
-class SupportNotifier
-  def initialize client=nil
-    @client = client || Bot::Client.build
+class SupportNotifier < Medlink.struct(:telegram, :callbacks)
+  def self.for bot
+    new telegram: bot.telegram, callbacks: bot.dispatch.callbacks
   end
 
-  def call user, buttons
+  def call user
     user.needs_help!
-    client.message_support intro(user)
-    client.message_support history(user), reply_markup: buttons
+    telegram.message_support intro(user)
+
+    keyboard = Handlers::Handler::Types::InlineKeyboardMarkup.new inline_keyboard: [
+      callbacks.button(:expand_message_history, "See More"),
+      callbacks.button(:resolve_support, "Done!", user_id: user.id)
+    ]
+    telegram.message_support history(user), markup: keyboard
   end
 
   private
@@ -18,6 +23,6 @@ class SupportNotifier
   end
 
   def history user
-    "User history goes here ..."
+    user.receipts.newest(10).map { |r| r.request.text }.join("\n")
   end
 end

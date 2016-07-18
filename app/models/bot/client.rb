@@ -1,18 +1,32 @@
 class Bot
-  class Client
-    SUPPORT_ID = :support
-
+  class Client < Medlink.struct(:sender)
     def self.build
-      new Figaro.env.telegram_token!
+      t = Telegram::Bot::Client.new Figaro.env.telegram_token!
+      new sender: ->(opts) { t.api.send_message opts }
     end
 
-    def initialize token
-      @api = Telegram::Bot::Client.new(token).api
+    def reply_to request, message:
+      message reply_routing_keys(request).merge message: message
     end
 
-    def reply_to request, **opts
-      message reply_routing_keys(request).merge opts
+    def message msg
+      sender.call msg
     end
+
+    def message_support text, markup: nil
+      message(
+        chat_id: User.support.telegram_id,
+        message: Bot::Response::Item.new(text, markup: markup)
+      )
+    end
+
+    def inspect
+      # :nocov:
+      %|<#{self.class.name}>|
+      # :nocov:
+    end
+
+    private
 
     def reply_routing_keys request
       if request.try :chat
@@ -24,33 +38,5 @@ class Bot
       end
     end
 
-    def message **opts
-      if Rails.env.test?
-        messages[opts[:chat_id]] ||= []
-        messages[opts[:chat_id]].push opts
-      else
-        api.send_message **opts
-      end
-    end
-
-    def message_support text, **opts
-      opts[:text]    = text
-      opts[:chat_id] = SUPPORT_ID
-
-      if Rails.env.test?
-        messages[:support] ||= []
-        messages[:support].push opts
-      else
-        api.send_message **opts
-      end
-    end
-
-    def messages
-      @messages ||= {}
-    end
-
-    private
-
-    attr_reader :api
   end
 end

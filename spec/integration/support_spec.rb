@@ -1,9 +1,9 @@
 require "rails_helper"
 
 describe "Getting registration help", integration: true do
-  let(:bot) { testbot }
+  let(:bot) { testbot db: true }
 
-  pending "can get help" do
+  it "lets users ask for help" do
     pcv.save! # we'll need to reload
 
     as pcv do
@@ -15,10 +15,10 @@ describe "Getting registration help", integration: true do
 
     expect(pcv.reload.needs_help?).to eq true
 
-    as :support do
-      see /@#{user.username}.*needs.*help/
+    as User.support do
+      see /@#{pcv.telegram_username}.*needs.*help/
       see /I don\'t know what to do/
-      click "Done"
+      click /Done/
     end
 
     expect(pcv.reload.needs_help?).to eq false

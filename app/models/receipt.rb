@@ -20,8 +20,7 @@ class Receipt < ApplicationRecord
     json = self[:response]
     return unless json
     json.map do |h|
-      opts = h["opts"].map { |k,v| [k.to_sym, v] }.to_h
-      Bot::Response::Item.new h["text"], **opts
+      Bot::Response::Item.new h["text"], markup: h["markup"]
     end
   end
 end

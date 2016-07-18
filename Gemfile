@@ -14,6 +14,7 @@ gem 'pry-rails'
 
 gem 'jbuilder', '~> 2.0'
 
+gem 'dry-container'
 gem 'figaro'
 gem 'medlink', path: File.expand_path('../../medlink-gem', __FILE__)
 gem 'telegram-bot-ruby', require: 'telegram/bot'

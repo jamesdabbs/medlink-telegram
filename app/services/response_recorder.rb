@@ -11,8 +11,7 @@ class ResponseRecorder
     block.call
   rescue StandardError => e
     receipt.error = serialize_error(e)
-    c.error = e
-    error_handler.call c
+    error_handler.call c, e
   ensure
     receipt.assign_attributes \
       response: c.response.messages, handled: c.handled?

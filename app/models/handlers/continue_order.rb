@@ -20,7 +20,7 @@ module Handlers
           "#{s.shortcode} - #{s.name}"
         end.join "\n"
 
-        c.reply "I'm not entirely sure what '#{c.message.text}' is. Did you mean one of the following?<pre>#{suggestions}</pre>", parse_mode: "html"
+        c.reply "I'm not entirely sure what '#{c.message.text}' is. Did you mean one of the following?<pre>#{suggestions}</pre>"
 
         # TODO: what if the user replies "no"?
       end

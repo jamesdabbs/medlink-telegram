@@ -6,10 +6,16 @@ module HandlerHelpers
 
   def context
     @context ||= Handlers::Context.new(
-      build(:message, text: ""), response, Medbot.dispatch, medlink: medlink)
+      bot:      Medbot,
+      message:  build(:message, text: ""),
+      response: response,
+      medlink:  medlink,
+      user:     nil
+    )
   end
 
   def user= u
+    @chat_id = u.telegram_id
     allow(context).to receive(:user).and_return(u)
   end
   def message= m
@@ -17,21 +23,17 @@ module HandlerHelpers
   end
 
   def response
-    @response ||= Bot::Response.new responder: ->(*_) { }
+    @response ||= Bot::Response.new telegram: MedlinkTelegram.bot.telegram
   end
 
   def run user: nil, message: nil, text: "", with: nil
     self.user    = user if user
-    self.message = message || build(:message, text: text)
+    self.message = message || build(:message, text: text, chat_id: @chat_id)
     with ? context.call(described_class, **with) : context.call(described_class)
   end
 
   def messages
     response.messages
-  end
-
-  def replies
-    messages.map &:text
   end
 end
 

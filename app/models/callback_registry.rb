@@ -12,10 +12,22 @@ class CallbackRegistry
     @callbacks[key.to_sym]
   end
 
-  def buttons data, button_klass: Handlers::Handler::Types::InlineKeyboardButton
+  def buttons data, button_klass: nil
     data.map do |key, label|
-      raise "Callback not registered: #{key}" unless self[key]
-      button_klass.new text: label, callback_data: { key: key }.to_json
+      button key, label, button_klass: button_klass
     end
+  end
+
+  def button key, label, **data
+    button_klass = data.delete(:button_klass) || \
+      Handlers::Handler::Types::InlineKeyboardButton
+    raise "Callback not registered: #{key}" unless self[key]
+    button_klass.new text: label, callback_data: data.merge(key: key).to_json
+  end
+
+  def inspect
+    # :nocov:
+    %|<#{self.class.name}[#{@callbacks.keys.map(&:to_s).join(", ")}]>|
+    # :nocov:
   end
 end
