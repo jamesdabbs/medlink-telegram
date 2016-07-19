@@ -47,22 +47,17 @@ module Factories
 
   def build_message text:, contact: nil, chat_id: nil
     chat_id ||= rand(1 .. 1_000_000)
-    Telegram::Bot::Types::Message.new(
-      chat:    { id: chat_id },
-      text:    text,
-      contact: contact,
-      from:    { id: chat_id }
+    Message.new(
+      chat_id:   chat_id,
+      sender_id: chat_id,
+      text:      text,
+      contact:   contact
     )
   end
 
-  def build_callback data:, **opts
-    opts[:text] ||= ""
-    message = build_message **opts
-    Telegram::Bot::Types::CallbackQuery.new(
-      data:    data,
-      message: message,
-      from:    message.from
-    )
+  def build_callback key:, data: {}, chat_id: nil
+    chat_id ||= rand(1 .. 1_000_000)
+    Callback.new(key: key, data: data, chat_id: chat_id)
   end
 
   def build_order supply: nil

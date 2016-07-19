@@ -1,26 +1,23 @@
-class ResponseRecorder
-  def initialize persist:, error_handler:
-    @persist, @error_handler = persist, error_handler
-    freeze
-  end
+require "medlink/struct"
 
+class ResponseRecorder < Medlink.struct(:persist, :error_handler)
   def call c, &block
-    receipt = Receipt.new request: c.message.to_h, user: c.user
+    receipt = Receipt.new request: c.message.as_json, user: c.sender
     persist.call receipt
 
-    block.call
-  rescue StandardError => e
-    receipt.error = serialize_error(e)
-    error_handler.call c, e
-  ensure
-    receipt.assign_attributes \
-      response: c.response.messages, handled: c.handled?
-    persist.call receipt
+    begin
+      block.call
+    rescue StandardError => e
+      receipt.error = serialize_error(e)
+      error_handler.call c, e
+    ensure
+      receipt.assign_attributes \
+        response: c.response.messages, handled: c.handled?
+      persist.call receipt
+    end
   end
 
   private
-
-  attr_reader :persist, :error_handler
 
   def serialize_error e
     {

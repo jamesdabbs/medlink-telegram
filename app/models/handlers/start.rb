@@ -3,7 +3,7 @@ module Handlers
     command :start
 
     def call c
-      if c.user.registered?
+      if c.sender.registered?
         c.reply "Welcome back!"
         c.call PromptForAction
       else

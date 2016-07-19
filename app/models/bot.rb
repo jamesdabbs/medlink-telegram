@@ -1,13 +1,12 @@
 require "medlink/struct"
 
 class Bot < Medlink.struct(:dispatch, :recorder, :telegram)
-  def call message, medlink: nil, user: nil
+  def call message, medlink: nil
     context = Handlers::Context.new(
       bot:      self,
       message:  message,
       response: Bot::Response.new(telegram: telegram),
       medlink:  medlink,
-      user:     user
     )
 
     recorder.call context do
@@ -16,8 +15,12 @@ class Bot < Medlink.struct(:dispatch, :recorder, :telegram)
   end
 
   def receive update:
-    message = update.message || update.callback.query
-    call message
+    klass = update.callback_query ? Callback : Message
+    call klass.from_update update
+  end
+
+  def callback key, sender_id: nil, **data
+    call Callback.new key: key, sender_id: sender_id, data: data
   end
 
   def valid_token? token

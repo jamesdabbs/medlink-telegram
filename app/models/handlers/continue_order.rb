@@ -1,7 +1,7 @@
 module Handlers
   class ContinueOrder < Handler
     def applies? c
-      return false unless c.user.ordering?
+      return false unless c.sender.ordering?
       supply_finder(c).has_match? c.message.text
     end
 

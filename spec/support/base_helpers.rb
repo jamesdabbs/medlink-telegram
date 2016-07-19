@@ -8,13 +8,13 @@ module BaseHelpers
   end
 
   def replies chat_id=nil
-    Mailbox.held(chat_id || @chat_id)
+    MedlinkTelegram.mailbox.held(chat_id || @chat_id)
   end
 end
 
 RSpec.configure do |config|
   config.before :each do
     @chat_id = rand 1 .. 1_000_000
-    Mailbox.clear
+    MedlinkTelegram.mailbox.clear
   end
 end

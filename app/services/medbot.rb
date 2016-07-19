@@ -1,22 +1,15 @@
-recorder = ResponseRecorder.new(
-  # The error handler doesn't need a reference back to dispatch, but
-  # this seems inelegant ...
-  error_handler: Handlers::Error.new(nil),
-  persist: ->(receipt) { receipt.save! validate: false }
-)
-
-callbacks = CallbackRegistry.build(
-  show_request_history:    Handlers::ShowRequestHistory,
-  show_supply_list:        Handlers::ShowSupplyList,
-  show_outstanding_orders: Handlers::OutstandingOrders,
-  start_new_order:         Handlers::StartOrder,
-  expand_message_history:  Handlers::ExpandMessageHistory,
-  resolve_support:         Handlers::ResolveSupport
-)
-
-dispatch = Handlers::Dispatch.new(
+dispatch = Handlers::Dispatch.build(
+  callbacks: {
+    show_request_history:    Handlers::ShowRequestHistory,
+    show_supply_list:        Handlers::ShowSupplyList,
+    show_outstanding_orders: Handlers::OutstandingOrders,
+    start_new_order:         Handlers::StartOrder,
+    expand_message_history:  Handlers::ExpandMessageHistory,
+    resolve_support:         Handlers::ResolveSupport,
+    response_created:        Handlers::ResponseCreated,
+    check_delivery:          Handlers::CheckDelivery
+  },
   handlers: [
-    Handlers::Callbacks,
     Handlers::Start,
     Handlers::Settings,
     Handlers::RegisterContact,
@@ -36,8 +29,12 @@ dispatch = Handlers::Dispatch.new(
     Handlers::TakeOrder,
 
     Handlers::Fallback
-  ],
-  callbacks: callbacks
+  ]
+)
+
+recorder = ResponseRecorder.new(
+  error_handler: Handlers::Error.new(dispatch),
+  persist: ->(receipt) { receipt.save! validate: false }
 )
 
 Medbot = Bot.new(

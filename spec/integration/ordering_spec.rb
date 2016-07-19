@@ -43,6 +43,7 @@ describe "Ordering", integration: true do
 
   context "bot with errors" do
     let(:bot) { MedlinkTelegram.bot.with(
+      recorder: Medbot.recorder,
       dispatch: ->(c) { raise "Bot failure" }
     ) }
 

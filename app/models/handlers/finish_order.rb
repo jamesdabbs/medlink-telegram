@@ -3,7 +3,7 @@ module Handlers
     match /^done$/i
 
     def call c
-      c.user.update! ordering: false
+      c.sender.update! ordering: false
       c.reply "Cool, got it!"
     end
   end

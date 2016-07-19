@@ -5,9 +5,9 @@ module Handlers
     end
 
     def call c
-      c.user.attach contact: c.message.contact
+      c.sender.attach contact: c.message.contact
 
-      if c.user.medlinked?
+      if c.sender.medlinked?
         kb = Types::ReplyKeyboardHide.new(text: "", hide_keyboard: true)
         c.reply "Awesome, got it!", markup: kb
 

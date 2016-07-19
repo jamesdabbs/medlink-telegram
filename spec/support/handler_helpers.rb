@@ -10,13 +10,13 @@ module HandlerHelpers
       message:  build(:message, text: ""),
       response: response,
       medlink:  medlink,
-      user:     nil
+      sender:   nil
     )
   end
 
   def user= u
     @chat_id = u.telegram_id
-    allow(context).to receive(:user).and_return(u)
+    allow(context).to receive(:sender).and_return(u)
   end
   def message= m
     allow(context).to receive(:message).and_return(m)

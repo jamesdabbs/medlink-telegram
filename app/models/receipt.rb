@@ -6,7 +6,17 @@ class Receipt < ApplicationRecord
   serialize :response, JSON
 
   def request
-    @_request ||= Telegram::Bot::Types::Message.new(self[:request])
+    return @_request if @_request
+
+    r = self[:request]
+    @_request = case r["type"]
+    when "message"
+      Message.from_json r
+    when "callback"
+      Callback.from_json r
+    else
+      r
+    end
   end
 
   Error = Struct.new :message, :location

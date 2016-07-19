@@ -16,16 +16,13 @@ module IntegrationHelpers
   end
 
   def send_contact_info
-    send_message build :message, text: "", chat_id: @chat_id, contact: {
-      user_id:      @chat_id,
-      first_name:   "James",
-      last_name:    "Dabbs",
-      phone_number: "+1 555 867-5309"
-    }
+    send_message build :message, text: "", chat_id: @chat_id, contact: build_contact(user_id: @chat_id)
   end
 
   def send_callback data
-    send_message build :callback, chat_id: @chat_id, data: data
+    opts = JSON.parse(data).transform_keys &:to_sym
+    key  = opts.delete :key
+    bot.callback key, sender_id: @chat_id, **opts
   end
 
   def send_message message

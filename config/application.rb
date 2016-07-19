@@ -22,11 +22,14 @@ end
 module MedlinkTelegram
   class Application < Rails::Application
     config.container = Container.new.tap do |c|
-      c.register :bot, -> { Medbot }
+      c.register :bot,     -> { Medbot }
+      c.register :mailbox, -> { Mailbox.new }
     end
   end
 
-  def self.bot
-    Rails.application.config.container.resolve :bot
+  %i( bot mailbox ).each do |key|
+    define_singleton_method key do
+      Rails.application.config.container.resolve key
+    end
   end
 end

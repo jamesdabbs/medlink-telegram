@@ -12,6 +12,10 @@ class CallbackRegistry
     @callbacks[key.to_sym]
   end
 
+  def fetch key
+    self[key] || raise("Callback not registered: #{key}")
+  end
+
   def buttons data, button_klass: nil
     data.map do |key, label|
       button key, label, button_klass: button_klass

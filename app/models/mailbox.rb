@@ -1,19 +1,16 @@
-module Mailbox
-  extend self
+class Mailbox
+  attr_reader :all
 
-  def hold opts
-    chat_id = opts[:chat_id]
-    message = opts[:message]
+  def initialize
+    @all = {}
+  end
 
+  def hold chat_id:, message:
     held(chat_id).push message
   end
 
   def held chat_id
     all[chat_id] ||= []
-  end
-
-  def all
-    @held ||= {}
   end
 
   def clear

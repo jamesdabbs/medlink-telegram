@@ -42,8 +42,11 @@ Rails.application.configure do
 
   config.container.register :bot, -> {
     Medbot.with(
+      recorder: Medbot.recorder.with(
+        error_handler: ->(_,e) { raise e }
+      ),
       telegram: Bot::Client.new(
-        sender: ->(opts) { Mailbox.hold opts }
+        sender: MedlinkTelegram.mailbox.method(:hold)
       )
     )
   }

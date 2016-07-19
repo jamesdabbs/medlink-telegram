@@ -6,7 +6,7 @@ module Handlers
         show_outstanding_orders: "Show My Outstanding Orders",
         show_supply_list:        "List Available Supplies"
       )
-      c.reply "What can I do for you, #{c.user.first_name}?", markup: markup
+      c.reply "What can I do for you, #{c.sender.first_name}?", markup: markup
     end
   end
 end

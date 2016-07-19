@@ -1,5 +1,9 @@
 module Handlers
   class Dispatch
+    def self.build handlers:, callbacks:
+      new handlers: handlers, callbacks: CallbackRegistry.build(callbacks)
+    end
+
     def initialize handlers:, callbacks:
       # N.B. Handlers are assumed to be state-free, so this klass => instance
       #   cache should be fine
@@ -9,7 +13,15 @@ module Handlers
     end
 
     def call context
-      context.call find context
+      case context.message
+      when Message
+        context.call find context
+      when Callback
+        klass = callbacks.fetch context.message.key
+        context.message.data.any? ? self[klass].call(context, **context.message.data) : self[klass].call(context)
+      else
+        raise "Can't route #{context.message}"
+      end
     end
 
     def find context
