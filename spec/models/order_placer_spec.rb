@@ -5,7 +5,7 @@ describe OrderPlacer do
     medlink = instance_double Medlink::User::Client
     expect(medlink).to receive(:new_order)
 
-    placer = OrderPlacer.new medlink: medlink
+    placer = OrderPlacer.new medlink: medlink, user: pcv
     placer.run supplies(total: 2)
   end
 end

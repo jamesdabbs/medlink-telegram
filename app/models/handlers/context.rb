@@ -4,9 +4,9 @@ module Handlers
   class Context
     attr_reader :bot, :message, :response
 
-    def initialize bot:, message:, response:, sender: nil, medlink: nil
+    def initialize bot:, message:, response:
       @bot, @message, @response = bot, message, response
-      @sender, @medlink, @handlers = sender, medlink, []
+      @handlers = []
     end
 
     def call handler, *args
@@ -35,7 +35,7 @@ module Handlers
     end
 
     def medlink
-      @medlink ||= Medlink.for_phone sender.try :phone_number
+      bot.medlink
     end
 
     private

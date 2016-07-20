@@ -18,8 +18,8 @@ describe Handlers::TakeOrder, handler: true do
   let(:bandages) { double "Supply", name: "Bandages", shortcode: "BANDG" }
 
   it "interacts with Medlink" do
-    expect(medlink).to receive(:available_supplies).and_return [bandages]
-    expect(medlink).to receive(:new_order).with(supplies: [bandages])
+    expect(bot.medlink).to receive(:available_supplies).and_return [bandages]
+    expect(bot.medlink).to receive(:new_order).with([bandages], credentials: pcv.credentials)
 
     run user: pcv, text: "order bandg"
 
@@ -28,7 +28,7 @@ describe Handlers::TakeOrder, handler: true do
   end
 
   it "gives feedback on orders" do
-    expect(medlink).to receive(:available_supplies).and_return []
+    expect(bot.medlink).to receive(:available_supplies).and_return []
 
     placer = instance_double OrderPlacer,
       new_orders:          supplies("a", "b"),

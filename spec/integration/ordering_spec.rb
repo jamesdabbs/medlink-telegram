@@ -8,20 +8,22 @@ describe "Ordering", integration: true do
       say "/start"
       see /welcome to medlink/i
 
+      expect(bot.medlink).to receive(:credentials_for_phone_number).
+        and_return Medlink::Client::Credentials.new(user_id: 2622, token: "ordering-token")
       send_contact_info
       see /what can i do for you/i, buttons: 3
 
       click /place.*order/i
       see   /say.*list.*or.*say.*done/i
 
-      expect(medlink).to receive(:available_supplies).
+      expect(bot.medlink).to receive(:available_supplies).
         at_least(1).times.
         and_return supplies("Bandages", total: 3)
       say "list"
       expect(replies.last.text.lines.count).to eq 3
       expect(replies.last.text).to include "Bandages"
 
-      expect(medlink).to receive(:new_order)
+      expect(bot.medlink).to receive(:new_order)
       say "order bandages"
       see /Requested Bandages. Anything else?/
 
@@ -29,7 +31,19 @@ describe "Ordering", integration: true do
       see /cool/i
     end
 
+    it "notifies when the telegram number doesn't match medlink" do
+      say "/start"
+
+      expect(bot.medlink).to receive(:credentials_for_phone_number).and_return nil
+      send_contact_info
+
+      see "It looks like your Telegram phone number doesn't match"
+      see "I've notified @MedlinkSupport"
+    end
+
     it "records when no commands match" do
+      expect(bot.medlink).to receive(:credentials_for_phone_number).
+        and_return Medlink::Client::Credentials.new(user_id: 2622, token: "ordering-token")
       send_contact_info
       say "trying to do something that the bot isn't ready for"
 

@@ -13,10 +13,10 @@ module Handlers
     end
 
     def call c, finder: nil, placer: nil
-      finder ||= SupplyFinder.new(medlink: c.medlink)
+      finder ||= SupplyFinder.new(medlink: c.medlink, user: c.sender)
       result = finder.run parsed(c.message)
 
-      placer ||= OrderPlacer.new(medlink: c.medlink)
+      placer ||= OrderPlacer.new(medlink: c.medlink, user: c.sender)
       placer.run result.recognized
 
       if placer.new_orders.any?

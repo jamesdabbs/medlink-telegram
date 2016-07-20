@@ -3,10 +3,6 @@ module BaseHelpers
     ->(*_, &block) { block.call if block }
   end
 
-  def medlink
-    @medlink ||= instance_double Medlink::User::Client
-  end
-
   def replies chat_id=nil
     MedlinkTelegram.mailbox.held(chat_id || @chat_id)
   end

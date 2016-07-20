@@ -12,21 +12,17 @@ module IntegrationHelpers
   end
 
   def say text
-    send_message build :message, text: text, chat_id: @chat_id
+    bot.call build :message, text: text, chat_id: @chat_id
   end
 
   def send_contact_info
-    send_message build :message, text: "", chat_id: @chat_id, contact: build_contact(user_id: @chat_id)
+    bot.call build :message, text: "", chat_id: @chat_id, contact: build_contact(user_id: @chat_id)
   end
 
   def send_callback data
     opts = JSON.parse(data).transform_keys &:to_sym
     key  = opts.delete :key
     bot.callback key, sender_id: @chat_id, **opts
-  end
-
-  def send_message message
-    bot.call message, medlink: medlink
   end
 
   def see pattern, buttons: nil

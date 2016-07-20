@@ -5,15 +5,20 @@ module Handlers
     end
 
     def call c
-      c.sender.attach contact: c.message.contact
+      ContactRegisterer.new.call \
+        medlink: c.medlink, user: c.sender, contact: c.message.contact
 
-      if c.sender.medlinked?
+      if c.sender.reload.medlinked?
         kb = Types::ReplyKeyboardHide.new(text: "", hide_keyboard: true)
         c.reply "Awesome, got it!", markup: kb
 
         c.call PromptForAction
       else
-        c.call PageSupport
+        SupportNotifier.for(c.bot).call c.sender
+
+        c.reply "It looks like your Telegram phone number doesn't match the number attached to your Medlink account."
+        c.reply "Unfortunately, that means that I can't help you without paging a human, but I've notified @MedlinkSupport and someone should be reaching out to you as soon as possible."
+        c.reply "If you're asking about something urgent, please contact your PCMO directly."
       end
     end
   end

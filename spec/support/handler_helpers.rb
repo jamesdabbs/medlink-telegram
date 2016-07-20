@@ -6,12 +6,14 @@ module HandlerHelpers
 
   def context
     @context ||= Handlers::Context.new(
-      bot:      Medbot,
+      bot:      MedlinkTelegram.bot,
       message:  build(:message, text: ""),
-      response: response,
-      medlink:  medlink,
-      sender:   nil
+      response: response
     )
+  end
+
+  def bot
+    context.bot
   end
 
   def user= u

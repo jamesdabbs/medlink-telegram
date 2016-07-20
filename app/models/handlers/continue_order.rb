@@ -6,14 +6,14 @@ module Handlers
     end
 
     def supply_finder c
-      SupplyFinder.new(medlink: c.medlink)
+      SupplyFinder.new medlink: c.medlink, user: c.sender
     end
 
     def call c
       finder = supply_finder c
       # TODO: batch these up and send when the user is done?
       if m = finder.near_match(c.message.text)
-        c.medlink.new_order supplies: [m]
+        c.medlink.new_order [m], credentials: c.sender.credentials
         c.reply "Requested #{m.name}. Anything else?"
       else
         suggestions = finder.suggestions(c.message.text).map do |s|

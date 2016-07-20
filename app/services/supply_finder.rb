@@ -7,8 +7,8 @@ class SupplyFinder
     end
   end
 
-  def initialize medlink:
-    @medlink = medlink
+  def initialize medlink:, user:
+    @medlink, @user = medlink, user
   end
 
   def run supplies
@@ -45,7 +45,7 @@ class SupplyFinder
 
   private
 
-  attr_reader :medlink
+  attr_reader :medlink, :user
 
   def lookup text
     text = text.strip.downcase
@@ -61,7 +61,7 @@ class SupplyFinder
   end
 
   def supplies
-    @_supplies ||= medlink.available_supplies
+    @_supplies ||= medlink.available_supplies(credentials: user.credentials)
   end
 
   def d supply, text

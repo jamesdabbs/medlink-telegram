@@ -11,12 +11,17 @@ class User < ApplicationRecord
     User.where(telegram_id: id).first_or_create!
   end
 
-  def attach contact:
-    update!(
-      first_name:   contact.first_name,
-      last_name:    contact.last_name,
-      phone_number: contact.phone_number
-    )
+  def attach contact:, credentials:
+    update! \
+      first_name:    contact.first_name,
+      last_name:     contact.last_name,
+      phone_number:  contact.phone_number,
+      medlink_id:    credentials.try(:user_id),
+      medlink_token: credentials.try(:token)
+  end
+
+  def credentials
+    Medlink::Client::Credentials.new user_id: medlink_id, token: medlink_token
   end
 
   def registered?
@@ -24,9 +29,7 @@ class User < ApplicationRecord
   end
 
   def medlinked?
-    # TODO: this is currently trusting that the phone number will
-    #   be valid and findable in Medlink. This is not true.
-    phone_number.present?
+    medlink_id.present?
   end
 
   def name

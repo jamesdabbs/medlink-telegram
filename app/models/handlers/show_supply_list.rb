@@ -3,7 +3,7 @@ module Handlers
     command :list
 
     def call c
-      response = c.medlink.available_supplies.map do |s|
+      response = c.medlink.available_supplies(credentials: c.sender.credentials).map do |s|
         "#{s.shortcode} - #{s.name}"
       end.join "\n"
 

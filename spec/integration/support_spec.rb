@@ -7,7 +7,6 @@ describe "Getting registration help", integration: true do
     pcv.save! # we'll need to reload
 
     as pcv do
-      send_contact_info
       say "I don't know what to do"
       say "support"
       see /paged.*support/i

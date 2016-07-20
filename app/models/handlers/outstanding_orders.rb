@@ -5,7 +5,7 @@ module Handlers
     match /^(show|outstanding) orders$/i
 
     def call c
-      orders = c.medlink.outstanding_orders
+      orders = c.medlink.outstanding_orders credentials: c.sender.credentials
       unless orders.any?
         c.reply "You don't appear to have any outstanding orders."
         return

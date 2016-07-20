@@ -7,7 +7,7 @@ describe Handlers::OutstandingOrders, handler: true do
   it { should route "outstanding orders" }
 
   it "responds if you have no orders" do
-    expect(medlink).to receive(:outstanding_orders).and_return []
+    expect(bot.medlink).to receive(:outstanding_orders).and_return []
 
     run
 
@@ -16,7 +16,7 @@ describe Handlers::OutstandingOrders, handler: true do
 
   it "shows past orders" do
     orders = 3.times.map { build Medlink::Order }
-    expect(medlink).to receive(:outstanding_orders).and_return orders
+    expect(bot.medlink).to receive(:outstanding_orders).and_return orders
 
     run
 

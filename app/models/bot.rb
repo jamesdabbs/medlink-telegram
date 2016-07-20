@@ -1,12 +1,11 @@
 require "medlink/struct"
 
-class Bot < Medlink.struct(:dispatch, :recorder, :telegram)
-  def call message, medlink: nil
+class Bot < Medlink.struct(:dispatch, :recorder, :medlink, :telegram)
+  def call message
     context = Handlers::Context.new(
       bot:      self,
       message:  message,
       response: Bot::Response.new(telegram: telegram),
-      medlink:  medlink,
     )
 
     recorder.call context do
