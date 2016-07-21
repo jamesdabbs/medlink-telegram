@@ -17,9 +17,7 @@ class Bot
       end
 
       def buttons
-        markup.inline_keyboard.map { |a| a.first.text }
-      rescue
-        []
+        markup.inline_keyboard ? markup.inline_keyboard.map { |a| a.first.text } : []
       end
 
       def keyboard

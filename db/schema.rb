@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160719234748) do
+ActiveRecord::Schema.define(version: 20160720171940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "channels", force: :cascade do |t|
+    t.string   "name"
+    t.string   "chat_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_channels_on_name", using: :btree
+  end
 
   create_table "receipts", force: :cascade do |t|
     t.integer  "user_id"
@@ -30,7 +38,6 @@ ActiveRecord::Schema.define(version: 20160719234748) do
     t.integer  "telegram_id",       null: false
     t.string   "telegram_username"
     t.integer  "medlink_id"
-    t.string   "medlink_token"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.string   "first_name"
@@ -38,6 +45,7 @@ ActiveRecord::Schema.define(version: 20160719234748) do
     t.string   "phone_number"
     t.boolean  "ordering"
     t.boolean  "needs_help"
+    t.string   "medlink_token"
   end
 
 end

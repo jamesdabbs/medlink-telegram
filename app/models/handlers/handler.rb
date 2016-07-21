@@ -39,5 +39,9 @@ module Handlers
     private
 
     attr_reader :dispatch
+
+    def html_escape *args
+      ERB::Util.html_escape *args
+    end
   end
 end

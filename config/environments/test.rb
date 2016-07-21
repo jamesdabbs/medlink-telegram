@@ -45,8 +45,9 @@ Rails.application.configure do
       recorder: Medbot.recorder.with(
         error_handler: ->(_,e) { raise e }
       ),
-      telegram: Bot::Client.new(
-        sender: MedlinkTelegram.mailbox.method(:hold)
+      telegram: Medbot.telegram.with(
+        get_chat: ->(chat_id:) { { "result" => { "username" => "User #{chat_id}" } } },
+        sender:   MedlinkTelegram.mailbox.method(:hold)
       )
     )
   }

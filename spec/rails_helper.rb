@@ -16,4 +16,10 @@ RSpec.configure do |config|
   config.include HandlerHelpers,     handler: true
   config.include IntegrationHelpers, integration: true
   config.include Factories
+
+  config.before :all do
+    Channel.where(name: :support).first_or_create! do |c|
+      c.chat_id = rand 20_000 .. 30_000
+    end
+  end
 end

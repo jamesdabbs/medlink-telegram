@@ -49,7 +49,17 @@ module IntegrationHelpers
 
   def as user
     @chat_id = user.telegram_id
-    yield
-    @chat_id = nil
+    if block_given?
+      yield
+      @chat_id = nil
+    end
+  end
+
+  def as_support
+    @chat_id = Channel.by_name(:support).chat_id
+    if block_given?
+      yield
+      @chat_id = nil
+    end
   end
 end

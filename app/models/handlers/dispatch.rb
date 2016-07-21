@@ -15,9 +15,12 @@ module Handlers
     def call context
       case context.message
       when Message
-        context.call find context
+        handler = find context
+        Rails.logger.debug "Sending #{context.message.inspect} => #{handler.inspect}"
+        context.call handler
       when Callback
         klass = callbacks.fetch context.message.key
+        Rails.logger.debug "Sending #{context.message.inspect} => #{klass.inspect}"
         context.message.data.any? ? self[klass].call(context, **context.message.data) : self[klass].call(context)
       else
         raise "Can't route #{context.message}"

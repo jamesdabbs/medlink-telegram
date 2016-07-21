@@ -1,23 +1,20 @@
 class User < ApplicationRecord
-  validates_presence_of :telegram_id
+  validates :telegram_id, presence: true, uniqueness: true
 
   has_many :receipts
-
-  def self.support
-    by_telegram_id 999 # TODO
-  end
 
   def self.by_telegram_id id
     User.where(telegram_id: id).first_or_create!
   end
 
-  def attach contact:, credentials:
+  def attach contact:, credentials:, telegram_username:
     update! \
-      first_name:    contact.first_name,
-      last_name:     contact.last_name,
-      phone_number:  contact.phone_number,
-      medlink_id:    credentials.try(:user_id),
-      medlink_token: credentials.try(:token)
+      first_name:        contact.first_name,
+      last_name:         contact.last_name,
+      phone_number:      contact.phone_number,
+      medlink_id:        credentials.try(:user_id),
+      medlink_token:     credentials.try(:token),
+      telegram_username: telegram_username
   end
 
   def credentials

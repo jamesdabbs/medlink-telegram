@@ -10,8 +10,8 @@ class Bot
       @telegram.reply_to request, make_message(text, markup: markup)
     end
 
-    def send user, text, markup: nil
-      @telegram.message_user user, make_message(text, markup: markup)
+    def send to, text, markup: nil
+      @telegram.deliver to, make_message(text, markup: markup)
     end
 
     private

@@ -12,4 +12,10 @@ class Message < Medlink.struct(:chat_id, :contact, :sender_id, :text)
   def as_json
     to_h.merge type: "message"
   end
+
+  def inspect
+    # :nocov:
+    %|<#{self.class}("#{text}")>|
+    # :nocov:
+  end
 end

@@ -40,6 +40,6 @@ recorder = ResponseRecorder.new(
 Medbot = Bot.new(
   dispatch: dispatch,
   recorder: recorder,
-  medlink:  Medlink::Client.new(app_token: Figaro.env.medlink_token!),
+  medlink:  Medlink::Client.new(url: Figaro.env.medlink_url!, app_token: Figaro.env.medlink_token!),
   telegram: Bot::Client.build
 )

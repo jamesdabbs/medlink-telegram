@@ -21,7 +21,7 @@ describe TelegramController do
       callback_query: {
         data: {
           key: :start_new_order
-        },
+        }.to_json,
         from: {
           id:   1234,
           name: "Alice"

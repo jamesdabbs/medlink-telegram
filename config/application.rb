@@ -17,6 +17,20 @@ class Container
       container[:_cache][key] ||= container.fetch(key).call
     }
   end
+
+  def reload key
+    purge key
+    resolve key
+  end
+
+  def purge key
+    return unless _container[:_cache]
+    _container[:_cache].delete key
+  end
+
+  def reset!
+    _container[:_cache].clear
+  end
 end
 
 module MedlinkTelegram

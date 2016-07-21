@@ -14,7 +14,7 @@ describe "Getting registration help", integration: true do
 
     expect(pcv.reload.needs_help?).to eq true
 
-    as User.support do
+    as_support do
       see /@#{pcv.telegram_username}.*needs.*help/
       see /I don\'t know what to do/
       click /Done/

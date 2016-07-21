@@ -11,9 +11,9 @@ class Receipt < ApplicationRecord
     r = self[:request]
     @_request = case r["type"]
     when "message"
-      Message.from_json r
+      ::Message.from_json r
     when "callback"
-      Callback.from_json r
+      ::Callback.from_json r
     else
       r
     end
@@ -33,4 +33,10 @@ class Receipt < ApplicationRecord
       Bot::Response::Item.new h["text"], markup: h["markup"]
     end
   end
+
+  def replay
+    # :nocov:
+    Rails.application.config.container.reload(:bot).call request
+    # :nocov:
+  end if Rails.env.development?
 end

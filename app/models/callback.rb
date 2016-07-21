@@ -2,7 +2,7 @@ require "medlink/struct"
 
 class Callback < Medlink.struct(:sender_id, :key, :data)
   def self.from_update u
-    data = u.callback_query.data.transform_keys &:to_sym
+    data = JSON.parse(u.callback_query.data).transform_keys &:to_sym
     new \
       sender_id: u.callback_query.from.try(:id),
       key:       data.delete(:key),
@@ -15,5 +15,11 @@ class Callback < Medlink.struct(:sender_id, :key, :data)
 
   def as_json
     to_h.merge type: "callback"
+  end
+
+  def inspect
+    # :nocov:
+    %|<#{self.class}(#{key}: #{data})>|
+    # :nocov:
   end
 end

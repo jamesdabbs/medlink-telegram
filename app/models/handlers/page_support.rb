@@ -3,7 +3,7 @@ module Handlers
     command :support
 
     def call c
-      SupportNotifier.for(c.bot).call c.sender
+      SupportNotifier.for(c.bot).call user: c.sender, response: c.response
 
       c.reply "Okay, I've paged @MedlinkSupport."
       c.reply "Unfortunately, we're unable to have support available 24-7, but we'll respond as soon as we can."
